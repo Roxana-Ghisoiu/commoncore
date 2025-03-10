@@ -1,0 +1,115 @@
+De ce Debian
+Pentru ca e mai aproape de Ubuntu cu care m-am obisnuit la 42, suporta multe librarii si are mai multe optiuni pentru customizare, din cate am vazut pe internet.
+Centos spre exemplu mi se pare mai mult pentru zona de business, cu un support excellent.
+Nu am folosit Rocky Linux niciodata
+
+
+Ce este o masina virtuala.
+
+O masina virtuala este o resursa care la baza utilizeaza software in loc de componenete fizice pentru a rula programe sau aplicatii.
+Fiecare masina are system de operare separate, in acest fel putem avea mai multe masini virtuale pe o singura masina fizica.
+Aceste masini pot fi folosite pentru a testa de exemplu aplicatii in environment'uri separate, cu systeme de operare diferite
+Aceste masini virtuale functioneaza simuland partea de hardware, si functionana pe un host machine.
+Aceste masini virtuale se mai numesc si guest machine.
+https://en.wikipedia.org/wiki/Virtual_machine
+
+Care este diferenta dintre aptitude si apt
+Aptitude este un package manager high level, in timp ce APT este low level. APT poate fi folosit si de alti package manageri
+Aptitude este mai destept su poate sa inlature packetele care nu  mai sunt folosite, sau sa sugereze instalarea de packete dependente.
+APT face explicit ceea ce i se transmite in linia de comanda
+(read more: https://www.tecmint.com/difference-between-apt-and-aptitude/)
+
+
+Ce este AppArmor
+Este partea de Securitate a Linux care ofera Mandatory Access Control (MAC) security.
+Permite administratilor de system sa restrictioneza actiuni pe care anumite procese le executa.
+Acesta este inclus default cu sistemul de operare Debian.
+Se poate rula comanda aa-status sa verificam daca ruleaza
+(read more: https://en.wikipedia.org/wiki/AppArmor)
+
+Reguli de parole.
+
+
+Ce este LVM
+Logical Volume Manager - permite manipularea usoara a partitilor si volumelor logige pe un storage (ex: harddisk)
+
+
+Ce este UFW
+Uncomplicated firewall
+este o interface cu care putem modifica usor regulile de firewall.
+Il folosim pentru a configura ce porturi de cumunicare permitem si deasemenea si care porturi le blocam.
+
+
+
+Ce este SSH
+SSH sau secure shell este un mechanism de autentificare intre un client si un host(sau server).
+Foloseste tehnici de encriptare, in acest fel comunicarea dintre client si host sa fie facuta intro forma encriptata.
+Utilizatori care au Mac, sau Linux pot folosii comanda ssh direct dintr-un terminal.
+Pentru utilizatori Windows, se pot folosii aplicatii precum Putty.
+(read more: https://searchsecurity.techtarget.com/definition/Secure-Shell)
+
+Ce este Cron
+Cron sau un cron job, este o comanda pentru a programa comenzi sau scripturi sa ruleze la anumite intervale de timp.
+Se poate compara cu Scheduled Tasks pe windows
+pentru a edita crontab (tabelul cu joburi) se ruleaza comanda: sudo crontab -u root -e
+
+
+- Daca ti se cere sa areti Monitoring.sh, care in cazul tau se afla in folderul /root
+Ai doua optiuni:
+1. sudo cd /root/
+	ls -ltr
+2. ls -ltr /root/
+
+- Daca se doreste si vizualizarea fisierului monitoring.sh
+1. sudo vi /root/monitoring.sh
+
+Comenzi care se pot cere la evaluare
+
+- Verifica status firewall
+sudo ufw status
+
+- verifica daca ruleaza serviciul de ssh
+sudo systemctl status ssh
+
+- verifica ce utilizatori exista intr-un group
+getent group sudo #(pentru grupul sudo)
+getent group user42 #(pentru grupul user42)
+
+- Comanda pentru creare user nou
+sudo adduser new username (exemplu: sudo adduser rghisoiu)
+
+- Comanda pentru creare de grup nou
+sudo groupadd groupname
+
+- Comanda pentru a adauga un user intr-un group
+sudo useradd -G groupname username (ex: useradd -G sudo rghisoiu - adaugi userul rghisoiu in grupul sudo)
+
+
+- Verifica password of user si regulile de expirare
+sudo chage -l username
+
+- Verifica versiunea sistemului de operare si hostname-ul masini
+hostnamectl
+
+- Pentru a schimba hostname-ul masini
+sudo vi /etc/hostname
+sudo vi /etc/hosts - change current hostname to new hostname
+Dupa executarea comenzii de mai sus se restarteaza masina viruala cu comanda: restart
+
+
+- Pentru a lista partitiile existente
+lsblk
+
+- Pentru a verifica daca un pachet este instalat
+dpkg -l | grep sudo (de exemplu aceasta comanda arata daca este instalat sudo)
+
+- Pentru a verifica regulile de firewall configurate cu UFW
+sudo ufw status numbered
+- Pentru a sterge o regula 
+sudo ufw delete rule number
+
+- Pentru a permite un port se adauga regula cu urmatoarea comanda
+sudo ufw allow port (ex: sudo ufw allow 80 - aceasta comanda permite portul 80 pentru http)
+
+- Pentru a face ssh pe masina virtuala de debian
+ssh rghisoiu@127.0.0.1 -p 4242 - do this in terminal to show that SSH to port 4242 is working (in caz ca nu functioneaza verifica port forwarding rules in VirtualBox)
