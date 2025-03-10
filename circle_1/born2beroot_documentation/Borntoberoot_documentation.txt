@@ -1,0 +1,167 @@
+Why Debian
+Because it's close to Ubuntu which I know from 42, it supports multiple libraries and more options for customization from what I saw from internet.
+I never used Rocky linux
+
+
+What is a virtual machine:
+A virtual machine is a resourse that uses software instead of physical components to run an operating system or a set of applications
+Like this we can have for example multiple virtual machines that are using a single physical components
+This machines can be used for example if we like to test a program in a save isolated environment, as well as with multiple operating systems
+The machines work by simulating hardware, they can also be called guest machines. The work on a host machine.
+
+https://en.wikipedia.org/wiki/Virtual_machine
+
+- What is the difference between aptitude and apt
+Apt or Advanced Packaging Tool is a free and open source software which gracefully handles software installation and removal. 
+
+Aptitude is front-end to advanced packaging tool which adds a user interface to the functionality, thus allowing a user to interactively search for a package and install or remove it. 
+(read more: https://www.tecmint.com/difference-between-apt-and-aptitude/)
+
+Aptitude is a high-level package manager
+APT is a low level package manager that can be used by high level package managers
+
+
+What is AppArmor (Application Armor)
+It is a Linux Kernel security module that allows system administrators to restrict programs capabilities with per-program profiles.
+It provides mandatory access control(MAC), and allows administrators to restrict certain actiona some process are allow to make
+
+- to check if AppArmor is working run command: aa-status
+
+
+Password policies
+vi /etc/login.defs             password expire policy
+vi /etc/pam.d/common-password  password policy
+
+What is LVM
+Logical Volume Manager - It is used to easily manipulate partitions and volumes o storage (ex: hard disk)
+
+
+What is UFW
+Uncomplicated firewall
+It is a user friendly firewall manager
+we can use it to allow or block ports
+
+
+
+What is SSH
+SSH or secure shell is a network protocol that allow userss
+It allows communication between a client and a host
+It uses encryption techniques, this way the communication is done in an encrypted form for security purposes
+Users who have Mac OS or Linux can use ssh directly from terminal
+For Windows users we can use software like Putty as ssh client
+(read more: https://searchsecurity.techtarget.com/definition/Secure-Shell)
+
+What is Cron
+Cron is the system's main scheduler for running jobs or tasks unattended, or without user interaction, at a certain time
+It's similar to Windows Task Scheduler library
+
+
+
+- Show the Monitoring.sh
+two options:
+1. sudo cd /root/
+	ls -ltr
+2. ls -ltr /root/
+
+- If you like to view the file
+1. sudo vi /root/monitoring.sh
+
+
+
+
+
+Specific evaluation commands
+
+
+- check if openssh service is running
+sudo systemctl status ssh
+
+- check what users does a group contain
+getent group sudo #(pentru grupul sudo)
+getent group user42 #(pentru grupul user42)
+
+- create a new user command
+sudo adduser new username (exemplu: sudo adduser rghisoiu)
+
+- create a new group command
+sudo groupadd groupname
+
+- add user inside a group command
+sudo useradd -G groupname username (ex: useradd -G sudo rghisoiu - adds user rghisoiu in the group sudo)
+
+
+- check user password and expiration rules
+sudo chage -l username
+
+- check password policies:
+vi /etc/login.defs               (password expire policy)
+vi /etc/pam.d/common-password  	 (password policy)
+
+- check sudo config file
+sudo vi /etc/sudoers.d/sudoconfig (DO NOT ADD . in filename, or it will not work)
+
+- check sudo logs.
+sudo vi /var/log/sudo/sudo.log
+or 
+tail -f /var/log/sudo/sudo.log - to see just the end of the file entries
+
+
+
+- check operating system version and hostname command
+hostnamectl
+
+- to change machine hostname
+sudo vi /etc/hostname
+sudo vi /etc/hosts - change current hostname to new hostname
+After changes - restart machine
+sudo reboot
+
+- check the sudo logs.
+vi /var/log/sudo/sudo.log
+
+
+- check if AppArmor status
+sudo aa-status
+- check partitions
+lsblk
+
+- check crontab schedule
+sudo crontab -l
+- modify crontab schedule
+sudo crontab -e
+# Example crontab output 
+# Edit this file to introduce tasks to be run by cron. 
+# 
+# Each task to run has to be defined through a single line indicating 
+# when the task will be run and what command to run for the task 
+# .---------------- minute (0 - 59) 
+# | .------------- hour (0 - 23) 
+# | | .---------- day of month (1 - 31) 
+# | | | .------- month (1 - 12) OR jan,feb,mar,apr ... 
+# | | | | .---- day of week (0 - 6) (Sunday=0 or 7) 
+# | | | | | 
+# * * * * * command to be executed 
+# # Example of setting up a cron job to run a script every day at every 10 minutes 
+0 10 * * * /root/Monitoring.sh # it will run every 10 minutes
+
+
+
+
+
+
+
+- Check if a package is installed
+dpkg -l | grep sudo (for example this command shows if sudo package is installed)
+
+- To check UFW rules 
+sudo ufw status numbered
+- To delete a rule
+sudo ufw delete rule number
+- To open port 4242 for example for ssh connection
+sudo ufw allow 4242
+- To block a port for example deny port 22 to block ssh default port
+sudo ufw deny 22
+
+
+- Pentru a face ssh pe masina virtuala de debian
+ssh rghisoiu@127.0.0.1 -p 4242 - do this in terminal to show that SSH to port 4242 is working (in case it's not working check port forwarding rules in VirtualBox settings)
