@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 16:28:40 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/03/10 16:54:56 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/03/11 14:33:52 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,4 +55,31 @@ void	*philosopher_life(void *arg)
 		sleep_and_think(philo, data);
 	}
 	return (NULL);
+}
+
+#include "philosopher.h"
+
+int	initialize_philosophers(t_data *data)
+{
+	int	i;
+
+	data->philosophers = malloc(sizeof(t_philosopher) * data->num_philosophers);
+	data->forks = malloc(sizeof(pthread_mutex_t) * data->num_philosophers);
+	if (!data->philosophers || !data->forks)
+		return (ft_printf("Error: Memory allocation failed.\n"), 1);
+	i = 0;
+	while (i < data->num_philosophers)
+		pthread_mutex_init(&data->forks[i++], NULL);
+	pthread_mutex_init(&data->print_mutex, NULL);
+	i = 0;
+	while (i < data->num_philosophers)
+	{
+		data->philosophers[i].id = i + 1;
+		data->philosophers[i].times_eaten = 0;
+		data->philosophers[i].last_meal_time = 0;
+		data->philosophers[i].left_fork = &data->forks[i];
+		data->philosophers[i].right_fork = &data->forks[(i + 1) % data->num_philosophers];
+		i++;
+	}
+	return (0);
 }
