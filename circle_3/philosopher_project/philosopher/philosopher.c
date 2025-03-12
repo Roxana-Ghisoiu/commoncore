@@ -6,20 +6,38 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 16:28:40 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/03/11 14:33:52 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/03/12 19:15:42 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosopher.h"
 
+/**
+ * take_forks - Philosopher takes both forks (mutex lock).
+ * @philo: Pointer to the philosopher structure.
+ */
 void	take_forks(t_philosopher *philo, t_data *data)
 {
-	pthread_mutex_lock(philo->left_fork);
-	print_status(data, philo->id, "has taken a fork");
-	pthread_mutex_lock(philo->right_fork);
-	print_status(data, philo->id, "has taken a fork");
+	if (philo->id % 2 == 0)
+	{
+		pthread_mutex_lock(philo->right_fork);
+		print_status(data, philo->id, "has taken a fork");
+		pthread_mutex_lock(philo->left_fork);
+		print_status(data, philo->id, "has taken a fork");
+	}
+	else
+	{
+		pthread_mutex_lock(philo->left_fork);
+		print_status(data, philo->id, "has taken a fork");
+		pthread_mutex_lock(philo->right_fork);
+		print_status(data, philo->id, "has taken a fork");
+	}
 }
 
+/**
+ * eat - Philosopher eats and updates last meal time.
+ * @philo: Pointer to the philosopher structure.
+ */
 void	eat(t_philosopher *philo, t_data *data)
 {
 	take_forks(philo, data);
@@ -31,6 +49,10 @@ void	eat(t_philosopher *philo, t_data *data)
 	pthread_mutex_unlock(philo->right_fork);
 }
 
+/**
+ * sleep_and_think - Philosopher sleeps, then starts thinking.
+ * @philo: Pointer to the philosopher structure.
+ */
 void	sleep_and_think(t_philosopher *philo, t_data *data)
 {
 	print_status(data, philo->id, "is sleeping");
@@ -38,48 +60,49 @@ void	sleep_and_think(t_philosopher *philo, t_data *data)
 	print_status(data, philo->id, "is thinking");
 }
 
+/**
+ * should_continue - Checks if the philosopher should keep running.
+ * @philo: Pointer to the philosopher structure.
+ * @data: Pointer to the simulation data structure.
+ * Return: 1 if should continue, 0 otherwise.
+ */
+int	should_continue(t_philosopher *philo, t_data *data)
+{
+	pthread_mutex_lock(&data->print_mutex);
+	if (!data->simulation_running
+		|| (data->num_times_to_eat > 0
+			&& philo->times_eaten >= data->num_times_to_eat))
+	{
+		pthread_mutex_unlock(&data->print_mutex);
+		return (0);
+	}
+	pthread_mutex_unlock(&data->print_mutex);
+	return (1);
+}
+
+/**
+ * philosopher_life - Main routine for each philosopher thread.
+ * @arg: Pointer to the philosopher structure.
+ * Return: NULL when thread execution ends.
+ */
 void	*philosopher_life(void *arg)
 {
 	t_philosopher	*philo;
 	t_data			*data;
 
+	ft_printf("DEBUG: Încep philosopher_life...\n");
 	philo = (t_philosopher *)arg;
-	data = (t_data *)((char *)philo - offsetof(t_data, philosophers)
-			+ philo->id * sizeof(t_philosopher));
-	while (data->simulation_running)
+	if (!philo)
 	{
-		eat(philo, data);
-		if (data->num_times_to_eat != -1
-			&& philo->times_eaten >= data->num_times_to_eat)
-			break ;
-		sleep_and_think(philo, data);
+		ft_printf("ERROR: philo este NULL!\n");
+		return (NULL);
 	}
+	data = philo->data;
+	if (!data)
+	{
+		ft_printf("ERROR: data este NULL în philosopher_life!\n");
+		return (NULL);
+	}
+	ft_printf("DEBUG: Philosopher %d a început viața.\n", philo->id);
 	return (NULL);
-}
-
-#include "philosopher.h"
-
-int	initialize_philosophers(t_data *data)
-{
-	int	i;
-
-	data->philosophers = malloc(sizeof(t_philosopher) * data->num_philosophers);
-	data->forks = malloc(sizeof(pthread_mutex_t) * data->num_philosophers);
-	if (!data->philosophers || !data->forks)
-		return (ft_printf("Error: Memory allocation failed.\n"), 1);
-	i = 0;
-	while (i < data->num_philosophers)
-		pthread_mutex_init(&data->forks[i++], NULL);
-	pthread_mutex_init(&data->print_mutex, NULL);
-	i = 0;
-	while (i < data->num_philosophers)
-	{
-		data->philosophers[i].id = i + 1;
-		data->philosophers[i].times_eaten = 0;
-		data->philosophers[i].last_meal_time = 0;
-		data->philosophers[i].left_fork = &data->forks[i];
-		data->philosophers[i].right_fork = &data->forks[(i + 1) % data->num_philosophers];
-		i++;
-	}
-	return (0);
 }

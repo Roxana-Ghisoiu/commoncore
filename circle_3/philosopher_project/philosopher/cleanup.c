@@ -1,34 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   cleanup.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/22 16:44:13 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/03/12 17:12:30 by rghisoiu         ###   ########.fr       */
+/*   Created: 2025/03/12 12:18:44 by rghisoiu          #+#    #+#             */
+/*   Updated: 2025/03/12 12:18:46 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-/*DESCRIPTION
-The	strlen(void) function  calculates the length
-of the string pointed to by s,
-excluding the terminating null byte ('\0').
+#include "philosopher.h"
 
-RETURN VALUE
-The	strlen(void) function returns the number
-of bytes in the string pointed to by s.*/
-
-#include "libft.h"
-
-size_t	ft_strlen(const char *str)
+/**
+ * cleanup_resources - Frees memory and destroys mutexes.
+ * @data: Pointer to the simulation data structure.
+ */
+void	cleanup_resources(t_data *data)
 {
-	size_t	i;
+	int	i;
 
-	if (!str)
-		return (0);
 	i = 0;
-	while (str[i])
-		i++;
-	return (i);
+	while (i < data->num_philosophers)
+		pthread_mutex_destroy(&data->forks[i++]);
+	pthread_mutex_destroy(&data->print_mutex);
+	free(data->forks);
+	free(data->philosophers);
 }

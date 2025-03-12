@@ -3,20 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   ft_itoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rghisoiu <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/22 11:39:32 by rghisoiu          #+#    #+#             */
-/*   Updated: 2024/10/22 13:28:18 by rghisoiu         ###   ########.fr       */
+/*   Created: 2025/03/12 18:01:37 by rghisoiu          #+#    #+#             */
+/*   Updated: 2025/03/12 18:30:15 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-/*Function Purpose:
-The ft_itoa function converts an integer n to its string
-representation (essentially converting an int to a char *). For example,
-given			n = 123, it will return "123". */
 
 #include "libft.h"
 
-static size_t	get_size(int n)
+/**
+ * get_size - Determines the number of digits in a number (including sign).
+ * @n: The number to analyze.
+ * Return: The number of characters needed to store the number.
+ */
+static size_t	get_size(long n)
 {
 	size_t	size;
 
@@ -30,29 +31,37 @@ static size_t	get_size(int n)
 	}
 	return (size);
 }
+/**
+ * ft_itoa - Converts an integer to a string.
+ * @n: The integer to convert.
+ * Return: A string representing the integer (must be freed).
+ */
 
-char	*ft_itoa(int n)
+char	*ft_itoa( int n)
 {
 	char	*result;
-	long	num;
 	size_t	size;
+	long	num;
 
 	num = n;
-	size = get_size(n);
-	result = (char *)malloc(size + 1);
+	size = get_size(num);
+	result = malloc(size + 1);
 	if (!result)
 		return (NULL);
 	result[size] = '\0';
-	if (n == 0)
+	if (num == 0)
 		result[0] = '0';
-	if (n < 0)
-		num = -num;
-	while (num > 0)
+	else
 	{
-		result[--size] = (num % 10) + '0';
-		num /= 10;
+		if (num < 0)
+			num = -num;
+		while (num > 0)
+		{
+			result[--size] = (num % 10) + '0';
+			num /= 10;
+		}
+		if (n < 0)
+			result[0] = '-';
 	}
-	if (n < 0)
-		result[0] = '-';
 	return (result);
 }

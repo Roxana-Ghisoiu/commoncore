@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_putstr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rghisoiu <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 14:23:52 by rghisoiu          #+#    #+#             */
-/*   Updated: 2024/10/22 14:26:28 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/03/12 17:12:33 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,10 @@ to a specified file descriptor, character by character.*/
 
 void	ft_putstr_fd(char const *s, int fd)
 {
-	int	i;
+	size_t	i;
 
+	if (!s)
+		return ;
 	i = 0;
 	while (s[i])
 	{
