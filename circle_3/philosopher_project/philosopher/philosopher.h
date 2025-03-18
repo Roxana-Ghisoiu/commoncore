@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 16:32:21 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/03/12 18:52:46 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/03/18 12:58:11 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <unistd.h>
 # include <sys/time.h>
 # include <limits.h>
-# include "LibftPrintf/libft.h"  // Includes useful functions from libft
+# include <string.h>
 
 /* -------------------- STRUCTURES -------------------- */
 
@@ -27,8 +27,10 @@ typedef struct s_philosopher
 {
 	int				id;
 	pthread_t		thread;
+	int				eating;
 	int				times_eaten;
 	long			last_meal_time;
+	size_t			start_time;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
 	struct s_data	*data;
@@ -44,43 +46,54 @@ typedef struct s_data
 	t_philosopher	*philosophers;
 	pthread_mutex_t	*forks;
 	long			start_time;
-	int				simulation_running;
-	pthread_mutex_t	print_mutex;
+	int				dead_flag;
+	pthread_mutex_t	dead_lock;
+	pthread_mutex_t	meal_lock;
+	pthread_mutex_t	write_lock;
+	pthread_t		monitor_thread;
 }	t_data;
 
 /* ------------ FUNCTIONS DEFINED IN arguments.c ---------- */
 
-// Parses and validates command-line arguments
 int		parse_arguments(int argc, char **argv, t_data *data);
+int		ft_atoi(const char *str);
 
-/* ------------- FUNCTIONS DEFINED IN philosopher.c ------ */
+/* ------------ FUNCTIONS DEFINED IN init.c --------------- */
 
-// Initializes philosophers' structures and fork mutexes
 int		initialize_philosophers(t_data *data);
 
-// The main function for each philosopher (executed in threads)
-void	*philosopher_life(void *arg);
+/* ------------ FUNCTIONS DEFINED IN philosopher.c -------- */
 
-/* ----------- FUNCTIONS DEFINED IN threads.c --------- */
+int		is_simulation_active(t_data *data);
+int		lock_forks(t_philosopher *philo, t_data *data);
+int		eat(t_philosopher *philo, t_data *data);
+int		sleep_and_think(t_philosopher *philo, t_data *data);
 
-// Creates threads for each philosopher
+/* ------------ FUNCTIONS DEFINED IN threads.c ------------ */
+int		create_monitor_thread(t_data *data, pthread_t *observer);
+int		create_philosopher_threads(t_data *data);
+int		join_threads(t_data *data, pthread_t observer);
 int		create_threads(t_data *data);
+void	*philosopher_routine(void *pointer);
 
-// Waits for all philosopher threads to finish
-void	join_threads(t_data *data);
+/* ------------ FUNCTIONS DEFINED IN cleanup.c ------------ */
 
-/* ---------- FUNCTIONS DEFINED IN cleanup.c ---------- */
+void	cleanup(t_data *data);
+int		ft_strlen(char *str);
 
-// Cleans up resources (mutexes and allocated memory)
-void	cleanup_resources(t_data *data);
+/* ------------ FUNCTIONS DEFINED IN utils.c -------------- */
 
-/* ----------- AUXILIARY FUNCTIONS (DEFINED IN utils.c) ------- */
-
-// Prints the philosopher's status in a synchronized way
 void	print_status(t_data *data, int id, const char *status);
-
-// Returns the current timestamp in milliseconds
 long	get_timestamp(void);
 void	my_usleep(long time);
+int		should_stop(t_philosopher *philo);
 
+/* ------------ FUNCTIONS DEFINED IN main.c -------- */
+int		start_threads(t_data *data);
+
+/* ------------ FUNCTIONS DEFINED IN monitor.c -------- */
+void	*monitor(void *arg);
+int		check_simulation_end(t_data *data);
+int		check_if_all_ate(t_data *data);
+int		check_philosopher_dead(t_data *data, int i);
 #endif

@@ -5,104 +5,112 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/10 16:28:40 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/03/12 19:15:42 by rghisoiu         ###   ########.fr       */
+/*   Created: 2025/03/14 15:29:28 by rghisoiu          #+#    #+#             */
+/*   Updated: 2025/03/18 13:23:42 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosopher.h"
 
 /**
- * take_forks - Philosopher takes both forks (mutex lock).
- * @philo: Pointer to the philosopher structure.
+ * @brief Checks if the simulation is still active.
+ * 
+ * This function locks the dead_flag mutex and verifies
+ * whether the simulation should continue.
+ * 
+ * @param data Pointer to the simulation data structure.
+ * @return int 1 if the simulation is active, 0 otherwise.
  */
-void	take_forks(t_philosopher *philo, t_data *data)
+int	is_simulation_active(t_data *data)
 {
-	if (philo->id % 2 == 0)
+	pthread_mutex_lock(&data->dead_lock);
+	if (data->dead_flag)
 	{
-		pthread_mutex_lock(philo->right_fork);
-		print_status(data, philo->id, "has taken a fork");
-		pthread_mutex_lock(philo->left_fork);
-		print_status(data, philo->id, "has taken a fork");
-	}
-	else
-	{
-		pthread_mutex_lock(philo->left_fork);
-		print_status(data, philo->id, "has taken a fork");
-		pthread_mutex_lock(philo->right_fork);
-		print_status(data, philo->id, "has taken a fork");
-	}
-}
-
-/**
- * eat - Philosopher eats and updates last meal time.
- * @philo: Pointer to the philosopher structure.
- */
-void	eat(t_philosopher *philo, t_data *data)
-{
-	take_forks(philo, data);
-	print_status(data, philo->id, "is eating");
-	philo->last_meal_time = get_timestamp();
-	philo->times_eaten++;
-	usleep(data->time_to_eat * 1000);
-	pthread_mutex_unlock(philo->left_fork);
-	pthread_mutex_unlock(philo->right_fork);
-}
-
-/**
- * sleep_and_think - Philosopher sleeps, then starts thinking.
- * @philo: Pointer to the philosopher structure.
- */
-void	sleep_and_think(t_philosopher *philo, t_data *data)
-{
-	print_status(data, philo->id, "is sleeping");
-	usleep(data->time_to_sleep * 1000);
-	print_status(data, philo->id, "is thinking");
-}
-
-/**
- * should_continue - Checks if the philosopher should keep running.
- * @philo: Pointer to the philosopher structure.
- * @data: Pointer to the simulation data structure.
- * Return: 1 if should continue, 0 otherwise.
- */
-int	should_continue(t_philosopher *philo, t_data *data)
-{
-	pthread_mutex_lock(&data->print_mutex);
-	if (!data->simulation_running
-		|| (data->num_times_to_eat > 0
-			&& philo->times_eaten >= data->num_times_to_eat))
-	{
-		pthread_mutex_unlock(&data->print_mutex);
+		pthread_mutex_unlock(&data->dead_lock);
 		return (0);
 	}
-	pthread_mutex_unlock(&data->print_mutex);
+	pthread_mutex_unlock(&data->dead_lock);
 	return (1);
 }
 
 /**
- * philosopher_life - Main routine for each philosopher thread.
- * @arg: Pointer to the philosopher structure.
- * Return: NULL when thread execution ends.
+ * @brief Locks both forks for the philosopher.
+ * 
+ * The philosopher must lock both the left and right fork
+ * before they can eat.
+ * 
+ * @param philo Pointer to the philosopher structure.
+ * @param data Pointer to the simulation data structure.
+ * @return int 1 if forks are locked successfully, 0 if the simulation stops.
  */
-void	*philosopher_life(void *arg)
+int	lock_forks(t_philosopher *philo, t_data *data)
 {
-	t_philosopher	*philo;
-	t_data			*data;
+	if (!is_simulation_active(data))
+		return (0);
+	printf("Philosopher %d waiting for left fork\n", philo->id);
+	pthread_mutex_lock(philo->left_fork);
+	printf("Philosopher %d took left fork\n", philo->id);
+	print_status(data, philo->id, "has taken a fork");
+	printf("Philosopher %d waiting for right fork\n", philo->id);
+	pthread_mutex_lock(philo->right_fork);
+	printf("Philosopher %d took right fork\n", philo->id);
+	print_status(data, philo->id, "has taken a fork");
+	return (1);
+}
 
-	ft_printf("DEBUG: Încep philosopher_life...\n");
-	philo = (t_philosopher *)arg;
-	if (!philo)
+/**
+ * @brief The philosopher eats and updates the last meal time.
+ * 
+ * The philosopher must acquire both forks, eat, update their
+ * last meal timestamp, and then release the forks.
+ * 
+ * @param philo Pointer to the philosopher structure.
+ * @param data Pointer to the simulation data structure.
+ * @return int 1 if the philosopher successfully eats, 0 if the simulation stops.
+ */
+
+int	eat(t_philosopher *philo, t_data *data)
+{
+	pthread_mutex_lock(philo->left_fork);
+	print_status(data, philo->id, "has taken a fork");
+	if (data->num_philosophers == 1)
 	{
-		ft_printf("ERROR: philo este NULL!\n");
-		return (NULL);
+		my_usleep(data->time_to_die);
+		pthread_mutex_unlock(philo->left_fork);
+		return (0);
 	}
-	data = philo->data;
-	if (!data)
-	{
-		ft_printf("ERROR: data este NULL în philosopher_life!\n");
-		return (NULL);
-	}
-	ft_printf("DEBUG: Philosopher %d a început viața.\n", philo->id);
-	return (NULL);
+	pthread_mutex_lock(philo->right_fork);
+	print_status(data, philo->id, "has taken a fork");
+	print_status(data, philo->id, "is eating");
+	pthread_mutex_lock(&data->meal_lock);
+	philo->last_meal_time = get_timestamp();
+	philo->times_eaten++;
+	pthread_mutex_unlock(&data->meal_lock);
+	my_usleep(data->time_to_eat);
+	pthread_mutex_unlock(philo->right_fork);
+	pthread_mutex_unlock(philo->left_fork);
+	return (1);
+}
+
+/**
+ * @brief The philosopher sleeps and then starts thinking.
+ * 
+ * The philosopher follows the routine of sleeping for a
+ * defined period and then thinking before the next meal.
+ * 
+ * @param philo Pointer to the philosopher structure.
+ * @param data Pointer to the simulation data structure.
+ * @return int 1 if the philosopher continues, 0 if the simulation stops.
+ */
+
+int	sleep_and_think(t_philosopher *philo, t_data *data)
+{
+	if (!is_simulation_active(data))
+		return (0);
+	print_status(data, philo->id, "is sleeping");
+	my_usleep(data->time_to_sleep);
+	if (!is_simulation_active(data))
+		return (0);
+	print_status(data, philo->id, "is thinking");
+	return (1);
 }
