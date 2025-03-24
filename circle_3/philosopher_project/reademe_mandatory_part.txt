@@ -1,0 +1,57 @@
+﻿Philosophers (Mandatory Part)
+🧠 Project Overview
+The Philosophers project is a classic concurrency exercise inspired by the Dining Philosophers problem formulated by Edsger Dijkstra. The goal is to simulate a set of philosophers seated around a table who alternate between eating, thinking, and sleeping without causing deadlocks or starvation.
+This version uses threads and mutexes to manage concurrency.
+📁 File Structure
+philo/
+├── Makefile
+├── philo.h
+├── main.c
+├── init_data.c
+├── init_threads.c
+├── philosopher_routine.c
+├── monitor_threads.c
+├── utils.c
+🚀 How to Run
+Compilation
+make
+Execution
+./philo <number_of_philosophers> <time_to_die> <time_to_eat> <time_to_sleep> [number_of_times_each_philosopher_must_eat]
+Example
+./philo 5 800 200 200
+This will run the simulation with 5 philosophers who die if they don't eat within 800ms, take 200ms to eat, and 200ms to sleep.
+📦 Parameters
+Parameter
+Description
+number_of_philosophers
+Total number of philosophers and forks
+time_to_die
+Time (in ms) before a philosopher dies without eating
+time_to_eat
+Time (in ms) a philosopher takes to eat
+time_to_sleep
+Time (in ms) a philosopher sleeps after eating
+number_of_times_each_must_eat
+Optional: stops simulation after all have eaten enough
+⚙️ Features
+    • Thread-based implementation using pthread 
+    • Mutex protection for forks (shared resources) 
+    • Monitoring thread to detect philosopher death 
+    • Accurate timing via gettimeofday() and custom sleep 
+    • Graceful exit after all philosophers finish eating (optional) 
+🚫 Forbidden Functions & Practices
+    • No global variables (except for one if justified) 
+    • No deadlocks or data races 
+    • No use of semaphores in this part 
+✅ Norminette
+    • All files pass the Norminette coding standard 
+    • Functions under 25 lines 
+    • Proper use of indentation and header formatting 
+📚 Learning Points
+    • Thread creation and synchronization 
+    • Mutex locking and unlocking 
+    • Timing precision with usleep and time measurement 
+    • Avoiding concurrency pitfalls: deadlocks, starvation, race conditions 
+
+This project builds a strong foundation for the bonus version, where processes and semaphores replace threads and mutexes.
+
