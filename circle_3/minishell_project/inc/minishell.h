@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 15:13:03 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/03/28 14:19:25 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/02 14:32:20 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 # include <errno.h>
 # include "../libft/libft.h"
 # include <stdbool.h>
+# include <stddef.h>
 
 # define RED "\033[0;31m"
 # define GREEN "\033[1;32m"
@@ -101,12 +102,41 @@ char	**create_env_copy(void);
 /*Prototypes function for minishel/minishell_loop.c */
 void	run_shell_loop(t_shell *sh);
 
+/*Prototypes function for minishel/cleanup_readline.c */
+void	cleanup_readline(void);
+
 /*Prototypes function for parse/resolve_command.c */
 char	*find_command_path(t_shell *sh, char *cmd);
 
 /*Prototypes function for lexer/check_input_errors.c */
-bool	has_unclosed_quotes(char *line);
-int		has_forbidden_chars(char *line);
+bool	has_unclosed_double_quotes(const char *input);
+bool	has_forbidden_chars(const char *input);
+
+/* Prototypes for lexer/handle_quotes.c */
+char	*remove_single_quotes(const char *input);
+bool	has_unclosed_single_quotes(const char *input);
+
+/*Prototypes function for expander/expand_quotes_dollar.c */
+char	*remove_double_quotes_preserve_dollar(const char *input);
+
+/*Prototypes function for expander/expand_dollar.c */
+char	*expand_line(t_shell *sh, const char *input);
+char	*expand_env_variables(t_shell *sh, const char *input);
+
+/*Prototypes function for expander/expand_asterisk.c */
+char	**expand_asterisk(void);
+char	**add_entry_to_array(char **result, int count, const char *name);
+
+/*Prototypes function for expander/expanding_utils.c */
+char	*extract_var_name(const char *str);
+char	*ft_strjoin_free(char *s1, const char *s2);
+char	*ft_strjoin_char(char *s1, char c);
+void	ft_sort_str_array(char **arr);
+
+/*Prototypes function for expander/expand_globbing_utils.c */
+bool	has_unquoted_asterisk(const char *str);
+char	*replace_asterisk_with_files(const char *input);
+
 
 /*Prototypes function for utils/utils_env_strjoin.c */
 char	*get_env_value(t_env *env, char *key);
@@ -123,6 +153,8 @@ char	**convert_env_to_array(t_env *env);
 /* Prototypes for utils/init_shell.c */
 void	init_shell(t_shell **sh, char **envp);
 void	free_shell(t_shell *sh);
+t_env	*create_env_list(char **envp);
+void	free_env_list(t_env *env);
 
 /* Prototypes for utils/signal.c */
 void	handle_signals(void);

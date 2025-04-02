@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 17:14:26 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/03/28 12:45:43 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/01 09:38:10 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ int	main(int argc, char **argv, char **envp)
 	if (!*envp)
 		free_str_array(env_copy);
 	free_shell(sh);
+	cleanup_readline();
 	return (0);
 }
 

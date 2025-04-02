@@ -6,53 +6,51 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 13:11:52 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/03/28 14:18:18 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/02 14:13:17 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 /**
- * @brief Checks if the input line contains unclosed single or double quotes.
+ * @brief Checks for unclosed double quotes in the input string.
  * 
- * @param line The input line to check.
- * @return true if quotes are unclosed, false otherwise.
+ * @param input The input line.
+ * @return true if unclosed double quotes are found, false otherwise.
  */
-bool	has_unclosed_quotes(char *line)
+bool	has_unclosed_double_quotes(const char *input)
 {
-	bool	in_single;
-	bool	in_double;
+	bool	in_quote;
 	int		i;
 
-	in_single = false;
-	in_double = false;
+	in_quote = false;
 	i = 0;
-	while (line[i])
+	while (input[i])
 	{
-		if (line[i] == '\'' && !in_double)
-			in_single = !in_single;
-		else if (line[i] == '"' && !in_single)
-			in_double = !in_double;
+		if (input[i] == '"')
+			in_quote = !in_quote;
 		i++;
 	}
-	return (in_single || in_double);
+	return (in_quote);
 }
 
 /**
- * @brief Check if a line contains forbidden characters.
- * @param line The input line to check.
- * @return 1 if forbidden characters are found, 0 otherwise.
+ * @brief Checks for forbidden characters like `;` or `\` in the input.
+ * 
+ * @param input The input line.
+ * @return true if forbidden characters are present, false otherwise.
  */
-int	has_forbidden_chars(char *line)
+bool	has_forbidden_chars(const char *input)
 {
 	int	i;
 
 	i = 0;
-	while (line[i])
+	while (input[i])
 	{
-		if (line[i] == '\\' || line[i] == ';')
-			return (1);
+		if (input[i] == ';' || input[i] == '\\')
+			return (true);
 		i++;
 	}
-	return (0);
+	return (false);
 }
+
