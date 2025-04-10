@@ -6,21 +6,45 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 17:17:51 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/02 14:36:28 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/10 15:45:15 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static char		*get_prompt(void);
-static void		process_and_execute_line(t_shell *sh, char *line);
-static void		execute_args(t_shell *sh, char **args);
-static bool		has_input_errors(const char *line);
+static char	*get_prompt(void);
+static void	execute_args(t_shell *sh, char **args);
+static bool	has_input_errors(const char *line);
 
 /**
- * @brief Main execution loop: displays prompt, reads input, and processes it.
+ * @brief Expands the line, splits it, expands * and executes args.
  */
-void	run_shell_loop(t_shell *sh)
+static void	process_and_execute_line(t_shell *sh, char *line)
+{
+	char	*expanded;
+	t_token	*tokens;
+	char	**args;
+
+	if (has_input_errors(line))
+		return ;
+	expanded = expand_line(sh, line);
+	if (!expanded || !*expanded)
+	{
+		free(expanded);
+		return ;
+	}
+	tokens = tokenize_input(expanded);
+	args = expand_args_globbing_from_tokens(tokens);
+	free(expanded);
+	free_tokens(tokens);
+	execute_args(sh, args);
+}
+
+/**
+ * @brief Main input loop: prompt → readline → process.
+ */
+
+void	 run_shell_loop(t_shell *sh)
 {
 	char	*line;
 	char	*prompt;
@@ -36,21 +60,30 @@ void	run_shell_loop(t_shell *sh)
 			break ;
 		}
 		add_history(line);
+		if (ft_strncmp(line, "exit", 5) == 0)
+		{
+			free(line);
+			printf("exit\n");
+			free_shell(sh);
+			cleanup_readline();
+			exit(0);
+		}
 		process_and_execute_line(sh, line);
 		free(line);
 	}
 }
 
 /**
- * @brief Generates the shell prompt string.
+ * @brief Creates prompt string.
  */
+
 static char	*get_prompt(void)
 {
 	return (ft_strdup("minishell$ "));
 }
 
 /**
- * @brief Checks for unclosed quotes or forbidden characters.
+ * @brief Validates input for forbidden chars or unclosed quotes.
  */
 static bool	has_input_errors(const char *line)
 {
@@ -71,30 +104,9 @@ static bool	has_input_errors(const char *line)
 	}
 	return (false);
 }
-/**
- * @brief Expands the input line, splits it into args, and executes it.
- */
-
-static void	process_and_execute_line(t_shell *sh, char *line)
-{
-	char	*expanded;
-	char	**args;
-
-	if (has_input_errors(line))
-		return ;
-	expanded = expand_line(sh, line);
-	if (!expanded || !*expanded)
-	{
-		free(expanded);
-		return ;
-	}
-	args = ft_split(expanded, ' ');
-	free(expanded);
-	execute_args(sh, args);
-}
 
 /**
- * @brief Resolves and executes the command from args.
+ * @brief Executes a parsed command if valid.
  */
 static void	execute_args(t_shell *sh, char **args)
 {

@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 17:14:26 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/01 09:38:10 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/10 13:28:28 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,19 +28,21 @@ int	main(int argc, char **argv, char **envp)
 	sh = NULL;
 	env_copy = NULL;
 	minishell_banner();
-	if (!*envp)
+	if (!envp || !*envp)
 		env_copy = create_env_copy();
 	else
 		env_copy = envp;
 	init_shell(&sh, env_copy);
 	handle_signals();
+	rl_bind_key('\t', rl_insert);
 	run_shell_loop(sh);
-	if (!*envp)
+	if (!envp || !*envp)
 		free_str_array(env_copy);
 	free_shell(sh);
 	cleanup_readline();
 	return (0);
 }
+
 
 /**
  * @brief Creates a default environment if envp is empty.

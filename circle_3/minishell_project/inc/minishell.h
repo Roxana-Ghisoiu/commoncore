@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 15:13:03 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/02 14:32:20 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/10 15:59:47 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ typedef struct s_token
 {
 	t_token_type	type;
 	char			*content;
+	bool			was_quoted;
 	struct s_token	*next;
 	struct s_token	*prev;
 }	t_token;
@@ -83,6 +84,12 @@ typedef struct s_shell
 	int			exit_code;
 	char		*line_input;
 }	t_shell;
+
+typedef struct s_arg_info
+{
+	char	*arg;
+	bool	was_quoted;
+}	t_arg_info;
 
 /* Structuri bonus goale, le completăm ulterior */
 typedef struct s_heredoc_file		t_hdoc_file;
@@ -138,6 +145,10 @@ bool	has_unquoted_asterisk(const char *str);
 char	*replace_asterisk_with_files(const char *input);
 
 
+/* Prototypes for expander/expand_args_utils.c */
+int		ft_arrlen(char **arr);
+char	**expand_args_globbing_from_tokens(t_token *tokens);
+
 /*Prototypes function for utils/utils_env_strjoin.c */
 char	*get_env_value(t_env *env, char *key);
 char	*ft_strjoin_three(char *s1, char *s2, char *s3);
@@ -161,5 +172,20 @@ void	handle_signals(void);
 
 /* Prototypes for utils/free_str_array.c */
 void	free_str_array(char **arr);
+
+/* Prototypes for utils/utils_tokens_asterisk.c */
+void	add_token_back(t_token **lst, t_token *new);
+int		tokens_len(t_token *tokens);
+char	**extract_args_from_tokens(t_token *tokens);
+
+/* Prototypes for utils/utils_tokens_free.c */
+void	free_tokens(t_token *head);
+
+/* Prototypes for utils /split_args_preserving_quotes.c */
+char	**split_args_preserving_quotes(const char *input);
+bool	is_quoted(const char *str);
+
+/* Prototypes for minishell/input_processing.c */
+t_token	*tokenize_input(const char *input);
 
 #endif

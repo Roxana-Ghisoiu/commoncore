@@ -6,25 +6,31 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 11:12:26 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/01 16:59:02 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/10 16:57:34 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 /**
- * @brief Handles full expansion: removes double quotes,
- * expands vars, handles '*'.
+ * @brief Handles full expansion: quotes, variables, and globbing (*).
  * 
- * @param sh The shell struct containing env list.
- * @param input The raw input line from the user.
- * @return A newly allocated string with quotes removed, vars and '*' expanded.
+ * @param sh The shell context.
+ * @param input Raw input line.
+ * @return Final expanded line.
  */
-char	*expand_line(t_shell *sh, const char *input)
+
+char *expand_line(t_shell *sh, const char *input)
+{
+	if (!input)
+		return (NULL);
+	return (expand_env_variables(sh, input));
+}
+
+/*char	*expand_line(t_shell *sh, const char *input)
 {
 	char	*without_quotes;
 	char	*expanded_vars;
-	char	*final_line;
 
 	if (!input)
 		return (NULL);
@@ -33,17 +39,9 @@ char	*expand_line(t_shell *sh, const char *input)
 		return (NULL);
 	expanded_vars = expand_env_variables(sh, without_quotes);
 	free(without_quotes);
-	if (!expanded_vars)
-		return (NULL);
-	if (has_unquoted_asterisk(expanded_vars))
-	{
-		final_line = replace_asterisk_with_files(expanded_vars);
-		free(expanded_vars);
-		return (final_line);
-	}
 	return (expanded_vars);
 }
-
+*/
 static char	*handle_variable(t_shell *sh, const char *input, int *i)
 {
 	char	*var_name;
@@ -61,9 +59,15 @@ static char	*handle_variable(t_shell *sh, const char *input, int *i)
 	return (joined);
 }
 
-/**
- * @brief Returns the next character as a string when not a variable.
- */
+static char	*handle_exit_code(t_shell *sh, int *i)
+{
+	char	*chunk;
+
+	chunk = ft_itoa(sh->exit_code);
+	*i += 2;
+	return (chunk);
+}
+
 static char	*handle_char(const char *input, int *i)
 {
 	char	*chunk;
@@ -75,9 +79,6 @@ static char	*handle_char(const char *input, int *i)
 	return (chunk);
 }
 
-/**
- * @brief Expands environment variables ($VAR) in the input string.
- */
 char	*expand_env_variables(t_shell *sh, const char *input)
 {
 	char	*result;
@@ -91,7 +92,9 @@ char	*expand_env_variables(t_shell *sh, const char *input)
 	i = 0;
 	while (input[i])
 	{
-		if (input[i] == '$' && input[i + 1]
+		if (input[i] == '$' && input[i + 1] == '?')
+			chunk = handle_exit_code(sh, &i);
+		else if (input[i] == '$' && input[i + 1]
 			&& (ft_isalnum(input[i + 1]) || input[i + 1] == '_'))
 			chunk = handle_variable(sh, input, &i);
 		else

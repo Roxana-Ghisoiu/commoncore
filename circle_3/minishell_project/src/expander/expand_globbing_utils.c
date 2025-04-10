@@ -3,59 +3,35 @@
 /*                                                        :::      ::::::::   */
 /*   expand_globbing_utils.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/01 12:48:09 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/01 15:34:57 by rghisoiu         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   expand_globbing_utils.c                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/01 13:30:00 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/01 13:30:00 by rghisoiu         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   expand_globbing_utils.c                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
+/*   By: rghisoiu <rghisoiu@student.42luxembourg>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 12:47:00 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/01 12:47:00 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/08 12:00:00 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 /**
- * @brief Checks if input contains unquoted * (outside of ' ' or " ").
+ * @brief Check if input string contains unquoted asterisk.
  * 
- * @param str The input string to scan.
- * @return true if unquoted * is found, false otherwise.
+ * @param str The string to check.
+ * @return true if unquoted asterisk is found.
  */
 bool	has_unquoted_asterisk(const char *str)
 {
-	bool	in_single;
 	bool	in_double;
+	bool	in_single;
 	int		i;
 
-	in_single = false;
 	in_double = false;
+	in_single = false;
 	i = 0;
 	while (str[i])
 	{
 		if (str[i] == '\'' && !in_double)
 			in_single = !in_single;
-		else if (str[i] == '\"' && !in_single)
+		else if (str[i] == '"' && !in_single)
 			in_double = !in_double;
 		else if (str[i] == '*' && !in_single && !in_double)
 			return (true);
@@ -65,10 +41,10 @@ bool	has_unquoted_asterisk(const char *str)
 }
 
 /**
- * @brief Replaces * in input with all matching files (non-hidden).
+ * @brief Replace '*' with matching files from current directory.
  * 
- * @param input The original input string.
- * @return A newly allocated string with * replaced by file list.
+ * @param input Input string possibly containing '*'.
+ * @return Expanded string with files instead of '*'.
  */
 char	*replace_asterisk_with_files(const char *input)
 {

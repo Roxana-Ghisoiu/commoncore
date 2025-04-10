@@ -6,17 +6,17 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 11:30:59 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/01 17:08:14 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/09 10:08:03 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 /**
- * @brief Extracts the name of the variable after $.
+ * @brief Extracts variable name from $VAR format.
  * 
- * @param str The string starting just after the '$' character.
- * @return A newly allocated variable name string.
+ * @param str The string after '$'.
+ * @return A newly allocated substring of the variable name.
  */
 char	*extract_var_name(const char *str)
 {
@@ -34,11 +34,11 @@ char	*extract_var_name(const char *str)
 }
 
 /**
- * @brief Concatenates two strings and frees the first one.
+ * @brief Concatenates s1 + s2 and frees s1.
  * 
- * @param s1 The first string (will be freed).
+ * @param s1 The string to free.
  * @param s2 The second string.
- * @return A newly allocated string containing s1 + s2.
+ * @return The new combined string.
  */
 char	*ft_strjoin_free(char *s1, const char *s2)
 {
@@ -53,18 +53,18 @@ char	*ft_strjoin_free(char *s1, const char *s2)
 	joined = malloc(len1 + len2 + 1);
 	if (!joined)
 		return (NULL);
-	ft_strlcpy(joined, s1, ft_strlen(s1) + 1);
-	ft_strlcpy(joined + ft_strlen(s1), s2, ft_strlen(s2) + 1);
+	ft_strlcpy(joined, s1, len1 + 1);
+	ft_strlcpy(joined + len1, s2, len2 + 1);
 	free(s1);
 	return (joined);
 }
 
 /**
- * @brief Appends a single character to the end of a string.
+ * @brief Appends a character to a string and frees the original string.
  * 
- * @param s The string to append to (will be freed).
+ * @param s The base string to extend.
  * @param c The character to append.
- * @return A newly allocated string with c appended to s.
+ * @return A new string with character added.
  */
 char	*ft_strjoin_char(char *s, char c)
 {
