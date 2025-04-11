@@ -50,7 +50,6 @@ void	start_julia(double cx, double cy)
 	fractal->offset_y = 0.0;
 	fractal->max_iterations = 100;
 	fractal->color = 0xFFFFFF;
-	//init_mlx(fractal);
 	printf("Start Julia with cx = %f, cy = %f\n", fractal->cx, fractal->cy);
 	start_fractal(fractal, "Julia", draw_julia);
 }

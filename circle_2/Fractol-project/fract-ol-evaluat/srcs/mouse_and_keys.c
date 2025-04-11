@@ -26,15 +26,18 @@ void	change_iterations(t_fractol *fractol, int key_code)
 /**
  * @brief    Initializes the fractal structure with default values.
  */
-void	init_fractal(t_fractol *fractol)
+void	init_fractal(t_fractol *fractal)
 {
-	fractol->zoom = 1.0;
-	fractol->offset_x = 0.0;
-	fractol->offset_y = 0.0;
-	fractol->max_iterations = 100;
-	fractol->color = 0xFFFFFF;
-	fractol->cx = -0.7;
-	fractol->cy = 0.27015;
+	fractal->zoom = 1.0;
+	fractal->offset_x = 0.0;
+	fractal->offset_y = 0.0;
+	fractal->max_iterations = 100;
+	fractal->color = 0xFFFFFF;
+	if (ft_strncmp(fractal->name, "julia", 6) != 0)
+	{
+		fractal->cx = -0.7;
+		fractal->cy = 0.27015;
+	}
 }
 
 /**
