@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 11:12:26 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/10 16:57:34 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/11 18:15:49 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
  * @return Final expanded line.
  */
 
-char *expand_line(t_shell *sh, const char *input)
+char	*expand_line(t_shell *sh, const char *input)
 {
 	if (!input)
 		return (NULL);

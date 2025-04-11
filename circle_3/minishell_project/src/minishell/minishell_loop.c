@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 17:17:51 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/10 15:45:15 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/11 18:18:13 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,7 @@ static void	process_and_execute_line(t_shell *sh, char *line)
 /**
  * @brief Main input loop: prompt → readline → process.
  */
-
-void	 run_shell_loop(t_shell *sh)
+void	run_shell_loop(t_shell *sh)
 {
 	char	*line;
 	char	*prompt;

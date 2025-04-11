@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 17:14:26 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/10 13:28:28 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/11 18:18:25 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@ int	main(int argc, char **argv, char **envp)
 	cleanup_readline();
 	return (0);
 }
-
 
 /**
  * @brief Creates a default environment if envp is empty.

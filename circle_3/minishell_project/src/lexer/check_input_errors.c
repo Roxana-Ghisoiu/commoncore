@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 13:11:52 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/02 14:13:17 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/11 18:16:37 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,4 +53,3 @@ bool	has_forbidden_chars(const char *input)
 	}
 	return (false);
 }
-

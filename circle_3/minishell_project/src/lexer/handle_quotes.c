@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 16:25:40 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/01 11:05:17 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/11 18:16:53 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,4 +51,3 @@ bool	has_unclosed_single_quotes(const char *input)
 	}
 	return (in_quote);
 }
-
