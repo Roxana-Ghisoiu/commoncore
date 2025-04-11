@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 11:12:26 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/11 18:15:49 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/11 18:56:43 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,17 @@
 
 char	*expand_line(t_shell *sh, const char *input)
 {
+	char	*protected;
+	char	*expanded;
+
 	if (!input)
 		return (NULL);
-	return (expand_env_variables(sh, input));
+	protected = protect_dollar_in_single_quotes(input);
+	if (!protected)
+		return (NULL);
+	expanded = expand_env_variables(sh, protected);
+	free(protected);
+	return (expanded);
 }
 
 /*char	*expand_line(t_shell *sh, const char *input)
@@ -42,6 +50,7 @@ char	*expand_line(t_shell *sh, const char *input)
 	return (expanded_vars);
 }
 */
+
 static char	*handle_variable(t_shell *sh, const char *input, int *i)
 {
 	char	*var_name;

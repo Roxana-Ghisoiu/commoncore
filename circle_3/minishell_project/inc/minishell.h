@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 15:13:03 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/10 15:59:47 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/11 18:45:59 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,6 +148,9 @@ char	*replace_asterisk_with_files(const char *input);
 /* Prototypes for expander/expand_args_utils.c */
 int		ft_arrlen(char **arr);
 char	**expand_args_globbing_from_tokens(t_token *tokens);
+
+/* Prototypes for expander/expand_protect_single_quotes.c */
+char	*protect_dollar_in_single_quotes(const char *input);
 
 /*Prototypes function for utils/utils_env_strjoin.c */
 char	*get_env_value(t_env *env, char *key);
