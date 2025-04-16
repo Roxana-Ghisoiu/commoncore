@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 15:13:03 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/11 18:45:59 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/16 19:10:09 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ typedef struct s_node
 	t_token_type	type;
 	char			*value;
 	char			**args;
+	int				heredoc_fd;
 	struct s_node	*left;
 	struct s_node	*right;
 }	t_node;
@@ -106,7 +107,12 @@ int		main(int argc, char **argv, char **envp);
 void	minishell_banner(void);
 char	**create_env_copy(void);
 
+/* Prototypes for minishell/input_processing.c */
+t_token	*tokenize_input(const char *input);
+void	create_and_add_token(t_token **tokens, char *content, bool quoted);
+
 /*Prototypes function for minishel/minishell_loop.c */
+void	process_and_execute_line(t_shell *sh, const char *input);
 void	run_shell_loop(t_shell *sh);
 
 /*Prototypes function for minishel/cleanup_readline.c */
@@ -144,7 +150,6 @@ void	ft_sort_str_array(char **arr);
 bool	has_unquoted_asterisk(const char *str);
 char	*replace_asterisk_with_files(const char *input);
 
-
 /* Prototypes for expander/expand_args_utils.c */
 int		ft_arrlen(char **arr);
 char	**expand_args_globbing_from_tokens(t_token *tokens);
@@ -157,12 +162,40 @@ char	*get_env_value(t_env *env, char *key);
 char	*ft_strjoin_three(char *s1, char *s2, char *s3);
 void	ft_free_split(char **arr);
 
+/*Prototypes function for utils/token_utils.c */
+void	handle_special_token(t_token **tokens, const char *input, int *i);
+void	set_token_type(t_token *token);
+
 /*Prototypes function for execute/execute_word.c */
 int		execute_word(t_shell *sh, t_node *node);
 
 /*Prototypes function for execute/execute_word_utils.c */
 int		fork_and_execute(t_shell *sh, char *path, char **args);
 char	**convert_env_to_array(t_env *env);
+int		execute_with_redir(t_shell *sh, char *path, char **args, t_node *node);
+
+/*Prototypes function for execute/execute_redir_input.c */
+int		execute_open_input_file(t_node *node);
+
+/*Prototypes function for execute/execute_redir_output.c */
+int		execute_open_output_file(t_node *node);
+
+/*Prototypes function for execute/execute_redir_heredoc.c */
+int		execute_handle_heredoc(const char *limiter);
+int		execute_process_heredocs(t_node *node);
+
+/*Prototypes function for execute/execute_redirections.c */
+int		prepare_redirections(t_node *node);
+
+/*Prototypes function for execute/execute_redir_errors.c */
+int		check_redirection_syntax(t_token *tokens);
+
+/* Prototypes for execute/execute.c */
+int		execute_command(t_shell *sh, t_node *node);
+
+/* Prototypes for execute/execute_utils.c */
+void	inherit_heredoc_fd(t_node *node);
+void	execute_parsed_tree(t_shell *sh);
 
 /* Prototypes for utils/init_shell.c */
 void	init_shell(t_shell **sh, char **envp);
@@ -188,7 +221,16 @@ void	free_tokens(t_token *head);
 char	**split_args_preserving_quotes(const char *input);
 bool	is_quoted(const char *str);
 
-/* Prototypes for minishell/input_processing.c */
-t_token	*tokenize_input(const char *input);
+/*Prototypes for treenodes/parse_command.c */
+t_node	*parse_command(t_token **tokens);
+
+/* Prototypes for treenodes/free_tree.c */
+void	free_tree(t_node *node);
+
+/* Prototypes for treenodes/tree_parse_args.c */
+int		parse_args(t_node *cmd_node, t_token *tokens);
+
+/* Prototypes for utils/debug_print_tokens.c */
+void	debug_print_tokens(t_token *tokens);
 
 #endif

@@ -6,38 +6,46 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 17:17:51 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/11 18:18:13 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/16 19:14:14 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+static void	check_exit_command(t_shell *sh, char *line);
 static char	*get_prompt(void);
-static void	execute_args(t_shell *sh, char **args);
 static bool	has_input_errors(const char *line);
+/*static void	execute_args(t_shell *sh, char **args);*/
 
 /**
- * @brief Expands the line, splits it, expands * and executes args.
+ * @brief Processes the input line, expands arguments, and executes the command.
+ *
+ * Tokenizes the input, expands any variables or globbing, builds the AST,
+ * processes heredoc if necessary, and executes the command.
+ *
+ * @param sh The shell structure.
+ * @param input The raw input line.
  */
-static void	process_and_execute_line(t_shell *sh, char *line)
+void	process_and_execute_line(t_shell *sh, const char *input)
 {
-	char	*expanded;
-	t_token	*tokens;
-	char	**args;
+	char		*expanded;
+	t_token		*tokens;
 
-	if (has_input_errors(line))
+	if (!input || !*input)
 		return ;
-	expanded = expand_line(sh, line);
-	if (!expanded || !*expanded)
+	expanded = expand_line(sh, input);
+	if (!expanded)
+		return ;
+	tokens = tokenize_input(expanded);
+	if (!tokens)
 	{
 		free(expanded);
 		return ;
 	}
-	tokens = tokenize_input(expanded);
-	args = expand_args_globbing_from_tokens(tokens);
+	sh->tokens = tokens;
+	sh->root = parse_command(&sh->tokens);
 	free(expanded);
-	free_tokens(tokens);
-	execute_args(sh, args);
+	execute_parsed_tree(sh);
 }
 
 /**
@@ -59,16 +67,30 @@ void	run_shell_loop(t_shell *sh)
 			break ;
 		}
 		add_history(line);
-		if (ft_strncmp(line, "exit", 5) == 0)
-		{
-			free(line);
-			printf("exit\n");
-			free_shell(sh);
-			cleanup_readline();
-			exit(0);
-		}
-		process_and_execute_line(sh, line);
+		check_exit_command(sh, line);
+		if (!has_input_errors(line))
+			process_and_execute_line(sh, line);
 		free(line);
+	}
+}
+
+/**
+ * @brief Checks if the user entered 'exit' and handles shell exit.
+ * 
+ * Frees resources and exits the shell if the input is 'exit'.
+ * 
+ * @param sh The shell structure.
+ * @param line The input line to check.
+ */
+static void	check_exit_command(t_shell *sh, char *line)
+{
+	if (ft_strncmp(line, "exit", 5) == 0)
+	{
+		free(line);
+		printf("exit\n");
+		free_shell(sh);
+		cleanup_readline();
+		exit(0);
 	}
 }
 
@@ -104,9 +126,8 @@ static bool	has_input_errors(const char *line)
 	return (false);
 }
 
-/**
- * @brief Executes a parsed command if valid.
- */
+/* Executes a parsed command if valid.
+
 static void	execute_args(t_shell *sh, char **args)
 {
 	char	*cmd_path;
@@ -126,3 +147,4 @@ static void	execute_args(t_shell *sh, char **args)
 		printf("minishell: command not found: %s\n", args[0]);
 	ft_free_split(args);
 }
+*/

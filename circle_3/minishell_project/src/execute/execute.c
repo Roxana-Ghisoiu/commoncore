@@ -1,31 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   execute_word.c                                     :+:      :+:    :+:   */
+/*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/27 14:51:57 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/15 17:25:50 by rghisoiu         ###   ########.fr       */
+/*   Created: 2025/04/15 13:06:01 by rghisoiu          #+#    #+#             */
+/*   Updated: 2025/04/16 18:59:53 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 /**
- * @brief Execute a command node (non-builtin).
- *
- * @param sh The shell data.
- * @param node The node containing command and arguments.
- * @return Exit status of the executed command.
+ * @brief Executes a command node with possible redirections.
+ * 
+ * Handles input/output/heredoc redirections using the prepared
+ * functions and then executes the command with execute_with_redir.
+ * 
+ * @param sh Pointer to the shell context.
+ * @param node The root node of the command to execute.
+ * @return int Exit status.
  */
-int	execute_word(t_shell *sh, t_node *node)
+int	execute_command(t_shell *sh, t_node *node)
 {
 	char	*path;
-	int		status;
 
 	if (!node || !node->args || !node->args[0])
-		return (1);
+		return (0);
 	path = find_command_path(sh, node->args[0]);
 	if (!path)
 	{
@@ -33,7 +35,5 @@ int	execute_word(t_shell *sh, t_node *node)
 		ft_putendl_fd(node->args[0], 2);
 		return (127);
 	}
-	status = execute_with_redir(sh, path, node->args, node);
-	free(path);
-	return (status);
+	return (execute_with_redir(sh, path, node->args, node));
 }

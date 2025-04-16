@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 11:17:05 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/10 16:44:42 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/16 18:20:05 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
  * @param content The string content of the token.
  * @param quoted Indicates whether the token was quoted.
  */
-static void	create_and_add_token(t_token **tokens, char *content, bool quoted)
+void	create_and_add_token(t_token **tokens, char *content, bool quoted)
 {
 	t_token	*new;
 
@@ -28,9 +28,9 @@ static void	create_and_add_token(t_token **tokens, char *content, bool quoted)
 		return ;
 	new->content = content;
 	new->was_quoted = quoted;
-	new->type = TOK_WORD;
 	new->next = NULL;
 	new->prev = NULL;
+	set_token_type(new);
 	add_token_back(tokens, new);
 }
 
@@ -74,7 +74,8 @@ static void	handle_unquoted_token(t_token **tokens, const char *input, int *i)
 	char	*content;
 
 	start = *i;
-	while (input[*i] && input[*i] != ' ')
+	while (input[*i] && input[*i] != ' ' && input[*i] != '\n'
+		&& input[*i] != '<' && input[*i] != '>' && input[*i] != '|')
 		(*i)++;
 	content = ft_substr(input, start, *i - start);
 	create_and_add_token(tokens, content, false);
@@ -101,8 +102,10 @@ t_token	*tokenize_input(const char *input)
 	{
 		while (input[i] == ' ')
 			i++;
-		if (input[i] == '\"' || input[i] == '\'')
+		if (input[i] == '\'' || input[i] == '\"')
 			handle_quoted_token(&tokens, input, &i);
+		else if (input[i] == '<' || input[i] == '>' || input[i] == '|')
+			handle_special_token(&tokens, input, &i);
 		else if (input[i])
 			handle_unquoted_token(&tokens, input, &i);
 	}

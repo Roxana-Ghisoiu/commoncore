@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 14:53:56 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/03/28 13:52:05 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/15 20:49:06 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,4 +94,43 @@ char	**convert_env_to_array(t_env *env)
 	}
 	envp[i] = NULL;
 	return (envp);
+}
+
+/**
+ * @brief Executes a command node, handling redirections.
+ * 
+ * Saves STDIN/STDOUT, prepares redirections,
+ * executes command, then restores fds.
+ * 
+ * @param sh Shell data
+ * @param path Path to the executable
+ * @param args Arguments to the command
+ * @param node Command node (for redirection info)
+ * @return Exit status
+ */
+int	execute_with_redir(t_shell *sh, char *path, char **args, t_node *node)
+{
+	int	saved_in;
+	int	saved_out;
+	int	status;
+
+	saved_in = dup(STDIN_FILENO);
+	saved_out = dup(STDOUT_FILENO);
+	if (saved_in == -1 || saved_out == -1)
+	{
+		perror("minishell: dup");
+		return (1);
+	}
+	if (prepare_redirections(node))
+	{
+		close(saved_in);
+		close(saved_out);
+		return (1);
+	}
+	status = fork_and_execute(sh, path, args);
+	dup2(saved_in, STDIN_FILENO);
+	dup2(saved_out, STDOUT_FILENO);
+	close(saved_in);
+	close(saved_out);
+	return (status);
 }

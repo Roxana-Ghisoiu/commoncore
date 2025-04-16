@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 12:36:58 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/11 18:20:04 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/15 13:33:30 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,6 +126,7 @@ void	free_shell(t_shell *sh)
 		free_tokens(sh->tokens);
 	if (sh->line_input)
 		free(sh->line_input);
-	// TODO: free_tree(sh->root); // (în viitor)
+	if (sh->root)
+		free_tree(sh->root);
 	free(sh);
 }
