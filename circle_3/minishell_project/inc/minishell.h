@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 15:13:03 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/16 19:10:09 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/22 20:03:52 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@
 # define END "\033[0m"
 # define CYAN "\033[1;36m"
 
+// Token types used during lexical analysis
 typedef enum e_token_type
 {
 	TOK_WORD = 1,
@@ -47,9 +48,11 @@ typedef enum e_token_type
 	TOK_REDIR_IN,
 	TOK_REDIR_OUT,
 	TOK_APPEND,
-	TOK_HEREDOC
+	TOK_HEREDOC,
+	TOK_INVALID
 }	t_token_type;
 
+// Doubly linked list node for storing environment variables
 typedef struct s_env
 {
 	char			*key;
@@ -58,6 +61,10 @@ typedef struct s_env
 	struct s_env	*prev;
 }	t_env;
 
+/*This structure represents a node in the abstract
+	syntax tree used for execution.
+ It can represent command nodes
+ 	or control operators like pipes and redirections.*/
 typedef struct s_node
 {
 	t_token_type	type;
@@ -68,6 +75,7 @@ typedef struct s_node
 	struct s_node	*right;
 }	t_node;
 
+// Token structure used during tokenization of the input
 typedef struct s_token
 {
 	t_token_type	type;
@@ -77,6 +85,7 @@ typedef struct s_token
 	struct s_token	*prev;
 }	t_token;
 
+// Main shell structure holding all runtime data
 typedef struct s_shell
 {
 	t_node		*root;
@@ -86,18 +95,28 @@ typedef struct s_shell
 	char		*line_input;
 }	t_shell;
 
+// Argument info used to keep track of quotes
 typedef struct s_arg_info
 {
 	char	*arg;
 	bool	was_quoted;
 }	t_arg_info;
 
+// Structure used to manage pipe-related context during execution
+typedef struct s_pipe_data
+{
+	int			*pipe_fd;
+	t_shell		*sh;		
+	t_node		*tree;
+	int			end;
+	int			std_fd;
+}	t_pipe_data;
+
 /* Structuri bonus goale, le completăm ulterior */
 typedef struct s_heredoc_file		t_hdoc_file;
 typedef struct s_heredoc_data		t_hdoc_data;
 typedef struct s_quote_flags		t_quote_flags;
 typedef struct s_exec_params		t_exec_params;
-typedef struct s_pipe_data			t_pipe_data;
 typedef struct s_input_copy_state	t_input_copy_state;
 typedef struct s_cmd_finder			t_cmd_finder;
 typedef struct s_tokenizer_state	t_tokenizer_state;
@@ -120,6 +139,9 @@ void	cleanup_readline(void);
 
 /*Prototypes function for parse/resolve_command.c */
 char	*find_command_path(t_shell *sh, char *cmd);
+
+/*Prototypes function for parse/parse_pipeline.c */
+t_node	*parse_pipeline(t_token **tokens);
 
 /*Prototypes function for lexer/check_input_errors.c */
 bool	has_unclosed_double_quotes(const char *input);
@@ -153,6 +175,7 @@ char	*replace_asterisk_with_files(const char *input);
 /* Prototypes for expander/expand_args_utils.c */
 int		ft_arrlen(char **arr);
 char	**expand_args_globbing_from_tokens(t_token *tokens);
+void	expand_args_globbing(t_token **tokens);
 
 /* Prototypes for expander/expand_protect_single_quotes.c */
 char	*protect_dollar_in_single_quotes(const char *input);
@@ -196,6 +219,14 @@ int		execute_command(t_shell *sh, t_node *node);
 /* Prototypes for execute/execute_utils.c */
 void	inherit_heredoc_fd(t_node *node);
 void	execute_parsed_tree(t_shell *sh);
+int		evaluate_execution(t_shell *sh, t_node *node);
+
+/* Prototypes for execute/execute_pipe.c */
+int		execute_pipe_node(t_shell *sh, t_node *node);
+
+/* Prototypes for execute/execute_pipes_utils.c */
+void	create_pipe_or_exit(int pipe_fd[2]);
+void	close_pipe(int pipe_fd[2]);
 
 /* Prototypes for utils/init_shell.c */
 void	init_shell(t_shell **sh, char **envp);
@@ -221,6 +252,9 @@ void	free_tokens(t_token *head);
 char	**split_args_preserving_quotes(const char *input);
 bool	is_quoted(const char *str);
 
+/* Prototypes for utils/debug_print_tokens.c */
+void	debug_print_tokens(t_token *tokens);
+
 /*Prototypes for treenodes/parse_command.c */
 t_node	*parse_command(t_token **tokens);
 
@@ -230,7 +264,8 @@ void	free_tree(t_node *node);
 /* Prototypes for treenodes/tree_parse_args.c */
 int		parse_args(t_node *cmd_node, t_token *tokens);
 
-/* Prototypes for utils/debug_print_tokens.c */
-void	debug_print_tokens(t_token *tokens);
+/* Prototypes for treenodes/create_pipe_node.c */
+t_node	*create_pipe_node(t_node *left, t_node *right);
+t_node	*build_parse_tree(t_token **tokens);
 
 #endif

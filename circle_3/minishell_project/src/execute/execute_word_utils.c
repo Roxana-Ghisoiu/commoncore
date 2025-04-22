@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 14:53:56 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/15 20:49:06 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/22 18:57:20 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
  * @param args Arguments to the command (null-terminated).
  * @return The exit status of the command.
  */
+
 int	fork_and_execute(t_shell *sh, char *path, char **args)
 {
 	pid_t	pid;

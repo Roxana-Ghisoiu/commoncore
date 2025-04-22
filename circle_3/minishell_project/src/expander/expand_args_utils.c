@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 15:17:44 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/10 17:00:07 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/22 20:03:15 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,4 +77,28 @@ char	**expand_args_globbing_from_tokens(t_token *tokens)
 	}
 	new_args[i] = NULL;
 	return (new_args);
+}
+
+/**
+ * @brief Applies globbing to the token list.
+ *
+ * If a token contains an unquoted asterisk, it replaces it with matching files.
+ * Only affects unquoted tokens, does not touch quoted ones.
+ *
+ * @param tokens Address to token list, updated in-place.
+ */
+void	expand_args_globbing(t_token **tokens)
+{
+	t_token	*curr;
+
+	curr = *tokens;
+	while (curr)
+	{
+		if (!curr->was_quoted && has_unquoted_asterisk(curr->content))
+		{
+			free(curr->content);
+			curr->content = replace_asterisk_with_files("*");
+		}
+		curr = curr->next;
+	}
 }

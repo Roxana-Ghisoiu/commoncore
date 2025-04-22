@@ -6,20 +6,20 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 13:06:01 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/16 18:59:53 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/22 13:06:53 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 /**
- * @brief Executes a command node with possible redirections.
+ * @brief Executes a command node or pipe with possible redirections.
  * 
- * Handles input/output/heredoc redirections using the prepared
- * functions and then executes the command with execute_with_redir.
+ * Handles command execution, including redirections and pipes.
+ * Delegates pipe logic to execute_pipe_node if node is of type TOK_PIPE.
  * 
  * @param sh Pointer to the shell context.
- * @param node The root node of the command to execute.
+ * @param node The root node of the command or pipe to execute.
  * @return int Exit status.
  */
 int	execute_command(t_shell *sh, t_node *node)
