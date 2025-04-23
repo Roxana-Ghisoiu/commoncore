@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 15:13:03 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/22 20:03:52 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/23 13:09:56 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,12 +75,20 @@ typedef struct s_node
 	struct s_node	*right;
 }	t_node;
 
+typedef enum e_quote_type
+{
+	QUOTE_NONE,
+	QUOTE_SINGLE,
+	QUOTE_DOUBLE
+}	t_quote_type;
+
 // Token structure used during tokenization of the input
 typedef struct s_token
 {
 	t_token_type	type;
 	char			*content;
 	bool			was_quoted;
+	t_quote_type	quote_type;
 	struct s_token	*next;
 	struct s_token	*prev;
 }	t_token;
@@ -112,10 +120,16 @@ typedef struct s_pipe_data
 	int			std_fd;
 }	t_pipe_data;
 
+// Structure used to manage quote
+typedef struct s_quote_flags
+{
+	bool	in_single_quotes;
+	bool	in_double_quotes;
+}	t_quote_flags;
+
 /* Structuri bonus goale, le completăm ulterior */
 typedef struct s_heredoc_file		t_hdoc_file;
 typedef struct s_heredoc_data		t_hdoc_data;
-typedef struct s_quote_flags		t_quote_flags;
 typedef struct s_exec_params		t_exec_params;
 typedef struct s_input_copy_state	t_input_copy_state;
 typedef struct s_cmd_finder			t_cmd_finder;
@@ -158,6 +172,11 @@ char	*remove_double_quotes_preserve_dollar(const char *input);
 char	*expand_line(t_shell *sh, const char *input);
 char	*expand_env_variables(t_shell *sh, const char *input);
 
+/* Prototypes for expander/expand_dollar_utils.c */
+char	*handle_exit_code(t_shell *sh, int *i);
+char	*handle_variable(t_shell *sh, const char *input, int *i);
+char	*handle_char(const char *input, int *i);
+
 /*Prototypes function for expander/expand_asterisk.c */
 char	**expand_asterisk(void);
 char	**add_entry_to_array(char **result, int count, const char *name);
@@ -179,6 +198,8 @@ void	expand_args_globbing(t_token **tokens);
 
 /* Prototypes for expander/expand_protect_single_quotes.c */
 char	*protect_dollar_in_single_quotes(const char *input);
+char	*handle_protected_dollar(int *i);
+char	*select_expansion_chunk(t_shell *sh, const char *input, int *i);
 
 /*Prototypes function for utils/utils_env_strjoin.c */
 char	*get_env_value(t_env *env, char *key);

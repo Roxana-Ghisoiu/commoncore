@@ -6,26 +6,37 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 14:53:56 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/22 18:57:20 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/23 14:40:20 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 /**
- * @brief Execute a command by forking and using execve.
- *
- * @param sh The shell data.
- * @param path Full path to the executable.
- * @param args Arguments to the command (null-terminated).
- * @return The exit status of the command.
+ * @brief Executes execve with environment and exits if it fails.
+ * 
+ * This function is only called inside the child process.
  */
+static void	child_execve_block(t_shell *sh, char *path, char **args)
+{
+	char	**envp;
 
+	envp = convert_env_to_array(sh->env_list);
+	execve(path, args, envp);
+	perror("minishell");
+	free_str_array(envp);
+	exit(EXIT_FAILURE);
+}
+
+/**
+ * @brief Forks and executes a command using execve.
+ * 
+ * Updates sh->exit_code with the result of the command.
+ */
 int	fork_and_execute(t_shell *sh, char *path, char **args)
 {
 	pid_t	pid;
 	int		status;
-	char	**envp;
 
 	pid = fork();
 	if (pid < 0)
@@ -34,24 +45,17 @@ int	fork_and_execute(t_shell *sh, char *path, char **args)
 		return (1);
 	}
 	if (pid == 0)
-	{
-		envp = convert_env_to_array(sh->env_list);
-		execve(path, args, envp);
-		perror("minishell");
-		free_str_array(envp);
-		exit(EXIT_FAILURE);
-	}
+		child_execve_block(sh, path, args);
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status))
-		return (WEXITSTATUS(status));
-	return (1);
+		sh->exit_code = WEXITSTATUS(status);
+	else
+		sh->exit_code = 1;
+	return (sh->exit_code);
 }
 
 /**
- * @brief Count the number of elements in the environment list.
- *
- * @param env The linked list of environment variables.
- * @return The number of variables.
+ * @brief Returns the number of environment variables.
  */
 static int	env_list_size(t_env *env)
 {
@@ -67,11 +71,7 @@ static int	env_list_size(t_env *env)
 }
 
 /**
- * @brief Convert linked list of environment variables into a char** array.
- *        Each entry is in the form "KEY=VALUE".
- *
- * @param env The linked list of environment variables.
- * @return Newly allocated array of strings for execve(), NULL-terminated.
+ * @brief Converts the env linked list to a NULL-terminated char** array.
  */
 char	**convert_env_to_array(t_env *env)
 {
@@ -98,16 +98,7 @@ char	**convert_env_to_array(t_env *env)
 }
 
 /**
- * @brief Executes a command node, handling redirections.
- * 
- * Saves STDIN/STDOUT, prepares redirections,
- * executes command, then restores fds.
- * 
- * @param sh Shell data
- * @param path Path to the executable
- * @param args Arguments to the command
- * @param node Command node (for redirection info)
- * @return Exit status
+ * @brief Executes a command with redirections, if any.
  */
 int	execute_with_redir(t_shell *sh, char *path, char **args, t_node *node)
 {

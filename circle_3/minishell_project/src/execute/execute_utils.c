@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 18:29:49 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/22 19:01:48 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/23 14:09:20 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,10 @@ void	execute_parsed_tree(t_shell *sh)
 	if (execute_process_heredocs(sh->root) == 0)
 	{
 		inherit_heredoc_fd(sh->root);
-		evaluate_execution(sh, sh->root);
+		sh->exit_code = evaluate_execution(sh, sh->root);
 	}
+	else
+		sh->exit_code = 1;
 	free_tree(sh->root);
 	sh->root = NULL;
 	free_tokens(sh->tokens);

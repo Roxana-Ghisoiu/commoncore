@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 14:39:57 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/22 18:58:32 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/23 14:02:55 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,13 +99,14 @@ static void	exec_pipe_fork(t_shell *sh, t_node *node, int *pipe_fd, pid_t *pid)
  */
 static void	wait_and_close_pipes(t_shell *sh, int *pipe_fd, pid_t *pid)
 {
-	int	status;
+	int	status_left;
+	int	status_right;
 
 	close_pipe(pipe_fd);
-	waitpid(pid[0], &status, 0);
-	waitpid(pid[1], &status, 0);
-	if (WIFEXITED(status))
-		sh->exit_code = WEXITSTATUS(status);
+	waitpid(pid[0], &status_left, 0);
+	waitpid(pid[1], &status_right, 0);
+	if (WIFEXITED(status_right))
+		sh->exit_code = WEXITSTATUS(status_right);
 	else
 		sh->exit_code = 1;
 }
