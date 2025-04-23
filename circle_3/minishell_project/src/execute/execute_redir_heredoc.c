@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 12:20:00 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/16 19:02:34 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/23 19:13:52 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,10 +65,6 @@ int	execute_process_heredocs(t_node *node)
 		node->heredoc_fd = execute_handle_heredoc(node->value);
 		if (node->heredoc_fd == -1)
 			return (1);
-		if (node->left && node->left->type == TOK_WORD)
-			node->left->heredoc_fd = node->heredoc_fd;
-		else if (node->right && node->right->type == TOK_WORD)
-			node->right->heredoc_fd = node->heredoc_fd;
 	}
 	if (execute_process_heredocs(node->left))
 		return (1);

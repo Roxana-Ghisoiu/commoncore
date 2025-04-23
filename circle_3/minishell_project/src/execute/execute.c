@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 13:06:01 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/23 14:17:55 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/23 20:26:08 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 int	execute_command(t_shell *sh, t_node *node)
 {
 	char	*path;
+	int		status;
 
 	if (!node || !node->args || !node->args[0])
 		return (0);
@@ -35,5 +36,7 @@ int	execute_command(t_shell *sh, t_node *node)
 		ft_putendl_fd(node->args[0], 2);
 		return (127);
 	}
-	return (execute_with_redir(sh, path, node->args, node));
+	status = execute_with_redir(sh, path, node->args, node);
+	free(path);
+	return (status);
 }

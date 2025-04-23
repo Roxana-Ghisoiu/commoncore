@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 14:51:57 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/15 17:25:50 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/23 18:57:32 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	execute_word(t_shell *sh, t_node *node)
 	{
 		ft_putstr_fd("minishell: command not found: ", 2);
 		ft_putendl_fd(node->args[0], 2);
-		return (127);
+		exit(127);
 	}
 	status = execute_with_redir(sh, path, node->args, node);
 	free(path);

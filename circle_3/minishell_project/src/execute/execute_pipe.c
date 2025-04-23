@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 14:39:57 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/23 14:02:55 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/23 18:40:51 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,14 +24,14 @@
 static void	execute_child_process(t_pipe_data *pipe_data)
 {
 	if (pipe_data->end == 0)
-	{
 		dup2(pipe_data->pipe_fd[1], STDOUT_FILENO);
-		close_pipe(pipe_data->pipe_fd);
-	}
 	else
-	{
 		dup2(pipe_data->pipe_fd[0], STDIN_FILENO);
-		close_pipe(pipe_data->pipe_fd);
+	close_pipe(pipe_data->pipe_fd);
+	if (pipe_data->tree->heredoc_fd > 0)
+	{
+		dup2(pipe_data->tree->heredoc_fd, STDIN_FILENO);
+		close(pipe_data->tree->heredoc_fd);
 	}
 	if (evaluate_execution(pipe_data->sh, pipe_data->tree) == -1)
 		exit(pipe_data->sh->exit_code);

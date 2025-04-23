@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 18:29:49 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/23 14:09:20 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/23 18:47:51 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,20 @@ void	inherit_heredoc_fd(t_node *node)
 {
 	if (!node)
 		return ;
-	if (node->left && node->left->type == TOK_HEREDOC)
-		node->heredoc_fd = node->left->heredoc_fd;
-	else if (node->right && node->right->type == TOK_HEREDOC)
-		node->heredoc_fd = node->right->heredoc_fd;
+	if (node->left)
+	{
+		if (node->left->heredoc_fd > 0)
+			node->heredoc_fd = node->left->heredoc_fd;
+		else
+			inherit_heredoc_fd(node->left);
+	}
+	if (node->right)
+	{
+		if (node->right->heredoc_fd > 0 && node->heredoc_fd == 0)
+			node->heredoc_fd = node->right->heredoc_fd;
+		else
+			inherit_heredoc_fd(node->right);
+	}
 }
 
 /**

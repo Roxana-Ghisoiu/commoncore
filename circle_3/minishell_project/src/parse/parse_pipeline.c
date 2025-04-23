@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 18:05:26 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/22 18:49:02 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/23 18:39:54 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ static t_node	*handle_pipe_split(t_token *pipe_token, t_token *start)
 	t_token		*after_pipe;
 	t_node		*left;
 	t_node		*right;
+	t_node		*pipe_node;
 
 	after_pipe = pipe_token->next;
 	pipe_token->next = NULL;
@@ -35,7 +36,10 @@ static t_node	*handle_pipe_split(t_token *pipe_token, t_token *start)
 	right = parse_pipeline(&after_pipe);
 	if (!right)
 		return (NULL);
-	return (create_pipe_node(left, right));
+	pipe_node = create_pipe_node(left, right);
+	if (left->heredoc_fd > 0)
+		pipe_node->heredoc_fd = left->heredoc_fd;
+	return (pipe_node);
 }
 
 /**

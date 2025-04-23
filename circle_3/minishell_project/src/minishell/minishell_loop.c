@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 17:17:51 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/22 19:51:10 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/23 20:06:29 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,29 +48,10 @@ void	process_and_execute_line(t_shell *sh, const char *input)
 	sh->root = build_parse_tree(&sh->tokens);
 	free(expanded);
 	execute_parsed_tree(sh);
+	free_tree(sh->root);
+	sh->root = NULL;
 }
-/*void	process_and_execute_line(t_shell *sh, const char *input)
-{
-	char		*expanded;
-	t_token		*tokens;
 
-	if (!input || !*input)
-		return ;
-	expanded = expand_line(sh, input);
-	if (!expanded)
-		return ;
-	tokens = tokenize_input(expanded);
-	if (!tokens)
-	{
-		free(expanded);
-		return ;
-	}
-	sh->tokens = tokens;
-	sh->root = build_parse_tree(&sh->tokens);
-	free(expanded);
-	execute_parsed_tree(sh);
-}
-*/
 /**
  * @brief Main input loop: prompt → readline → process.
  */
@@ -149,26 +130,3 @@ static bool	has_input_errors(const char *line)
 	}
 	return (false);
 }
-
-/* Executes a parsed command if valid.
-
-static void	execute_args(t_shell *sh, char **args)
-{
-	char	*cmd_path;
-
-	if (!args || !args[0])
-	{
-		ft_free_split(args);
-		return ;
-	}
-	cmd_path = find_command_path(sh, args[0]);
-	if (cmd_path)
-	{
-		fork_and_execute(sh, cmd_path, args);
-		free(cmd_path);
-	}
-	else
-		printf("minishell: command not found: %s\n", args[0]);
-	ft_free_split(args);
-}
-*/
