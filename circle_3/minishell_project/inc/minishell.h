@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 15:13:03 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/24 15:13:54 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/25 00:22:26 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,14 +127,6 @@ typedef struct s_quote_flags
 	bool	in_double_quotes;
 }	t_quote_flags;
 
-/* Structuri bonus goale, le completăm ulterior */
-typedef struct s_heredoc_file		t_hdoc_file;
-typedef struct s_heredoc_data		t_hdoc_data;
-typedef struct s_exec_params		t_exec_params;
-typedef struct s_input_copy_state	t_input_copy_state;
-typedef struct s_cmd_finder			t_cmd_finder;
-typedef struct s_tokenizer_state	t_tokenizer_state;
-
 /*Prototypes function minishel/main.c */
 int		main(int argc, char **argv, char **envp);
 void	minishell_banner(void);
@@ -205,7 +197,7 @@ char	*select_expansion_chunk(t_shell *sh, const char *input, int *i);
 int		execute_word(t_shell *sh, t_node *node);
 
 /*Prototypes function for execute/execute_word_utils.c */
-int		fork_and_execute(t_shell *sh, char *path, char **args);
+int	fork_and_execute(t_shell *sh, char *path, char **args);
 char	**convert_env_to_array(t_env *env);
 int		execute_with_redir(t_shell *sh, char *path, char **args, t_node *node);
 
@@ -232,6 +224,7 @@ int		execute_command(t_shell *sh, t_node *node);
 void	inherit_heredoc_fd(t_node *node);
 void	execute_parsed_tree(t_shell *sh);
 int		evaluate_execution(t_shell *sh, t_node *node);
+t_node	*find_command_node(t_node *node);
 
 /* Prototypes for execute/execute_pipe.c */
 int		execute_pipe_node(t_shell *sh, t_node *node);
