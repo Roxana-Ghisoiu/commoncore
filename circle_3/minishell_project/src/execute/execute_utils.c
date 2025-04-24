@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 18:29:49 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/23 18:47:51 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/24 14:31:39 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,13 +50,24 @@ void	inherit_heredoc_fd(t_node *node)
  */
 void	execute_parsed_tree(t_shell *sh)
 {
-	if (execute_process_heredocs(sh->root) == 0)
+	if (execute_process_heredocs(sh->root) != 0)
 	{
-		inherit_heredoc_fd(sh->root);
-		sh->exit_code = evaluate_execution(sh, sh->root);
+		sh->exit_code = 1;
 	}
 	else
-		sh->exit_code = 1;
+	{
+		inherit_heredoc_fd(sh->root);
+		if (sh->root && sh->root->type == TOK_WORD
+			&& sh->root->args && sh->root->args[0]
+			&& is_builtin(sh->root->args[0]))
+		{
+			sh->exit_code = execute_builtin(sh, sh->root, STDOUT_FILENO);
+		}
+		else
+		{
+			sh->exit_code = evaluate_execution(sh, sh->root);
+		}
+	}
 	free_tree(sh->root);
 	sh->root = NULL;
 	free_tokens(sh->tokens);

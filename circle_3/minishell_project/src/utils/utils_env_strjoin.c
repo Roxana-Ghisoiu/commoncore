@@ -6,29 +6,11 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 14:46:24 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/03/28 12:47:02 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/24 13:21:36 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-/**
- * @brief Search for the value of an environment variable in the list.
- *
- * @param env The linked list of environment variables.
- * @param key The name of the variable to find.
- * @return A newly allocated string with the value, or NULL if not found.
- */
-char	*get_env_value(t_env *env, char *key)
-{
-	while (env)
-	{
-		if (ft_strncmp(env->key, key, ft_strlen(key) + 1) == 0)
-			return (ft_strdup(env->value));
-		env = env->next;
-	}
-	return (NULL);
-}
 
 /**
  * @brief Join three strings into a single new string.

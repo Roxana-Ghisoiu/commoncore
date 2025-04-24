@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 15:13:03 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/23 13:09:56 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/24 15:13:54 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,15 +201,6 @@ char	*protect_dollar_in_single_quotes(const char *input);
 char	*handle_protected_dollar(int *i);
 char	*select_expansion_chunk(t_shell *sh, const char *input, int *i);
 
-/*Prototypes function for utils/utils_env_strjoin.c */
-char	*get_env_value(t_env *env, char *key);
-char	*ft_strjoin_three(char *s1, char *s2, char *s3);
-void	ft_free_split(char **arr);
-
-/*Prototypes function for utils/token_utils.c */
-void	handle_special_token(t_token **tokens, const char *input, int *i);
-void	set_token_type(t_token *token);
-
 /*Prototypes function for execute/execute_word.c */
 int		execute_word(t_shell *sh, t_node *node);
 
@@ -249,6 +240,10 @@ int		execute_pipe_node(t_shell *sh, t_node *node);
 void	create_pipe_or_exit(int pipe_fd[2]);
 void	close_pipe(int pipe_fd[2]);
 
+/* Prototypes for execute/execute_builtin_utils.c */
+int		is_builtin(char *cmd);
+int		execute_builtin(t_shell *sh, t_node *node, int fd_out);
+
 /* Prototypes for utils/init_shell.c */
 void	init_shell(t_shell **sh, char **envp);
 void	free_shell(t_shell *sh);
@@ -276,6 +271,19 @@ bool	is_quoted(const char *str);
 /* Prototypes for utils/debug_print_tokens.c */
 void	debug_print_tokens(t_token *tokens);
 
+/*Prototypes function for utils/env_strjoin.c */
+char	*ft_strjoin_three(char *s1, char *s2, char *s3);
+void	ft_free_split(char **arr);
+
+/*Prototypes function for utils/utils_env_list.c */
+char	*get_env_value(t_env *env, char *key);
+void	update_env_var(t_env **env_list, const char *key, const char *value);
+void	remove_env_var(t_env **env_list, const char *key);
+
+/*Prototypes function for utils/token_utils.c */
+void	handle_special_token(t_token **tokens, const char *input, int *i);
+void	set_token_type(t_token *token);
+
 /*Prototypes for treenodes/parse_command.c */
 t_node	*parse_command(t_token **tokens);
 
@@ -288,5 +296,26 @@ int		parse_args(t_node *cmd_node, t_token *tokens);
 /* Prototypes for treenodes/create_pipe_node.c */
 t_node	*create_pipe_node(t_node *left, t_node *right);
 t_node	*build_parse_tree(t_token **tokens);
+
+/* Prototypes for builtins/builtin_echo.c */
+int		builtin_echo(char **args, int fd_out);
+
+/* Prototypes for builtins/builtin_cd.c */
+int		builtin_cd(t_shell *sh, char **args);
+
+/* Prototypes for builtins/builtin_pwd.c */
+int		builtin_pwd(char **args, int fd_out);
+
+/* Prototypes for builtins/builtin_env.c */
+int		builtin_env(t_shell *sh, int fd_out);
+
+/* Prototypes for builtins/builtin_exit.c */
+int		builtin_exit(t_shell *sh, char **args);
+
+/* Prototypes for builtins/builtin_unset.c */
+int		builtin_unset(t_shell *sh, char **args);
+
+/* Prototypes for builtins/builtin_export.c */
+int		builtin_export(t_shell *sh, char **args, int fd_out);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 14:51:57 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/23 18:57:32 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/24 14:41:38 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ int	execute_word(t_shell *sh, t_node *node)
 
 	if (!node || !node->args || !node->args[0])
 		return (1);
+	if (is_builtin(node->args[0]))
+		return (execute_builtin(sh, node, STDOUT_FILENO));
 	path = find_command_path(sh, node->args[0]);
 	if (!path)
 	{

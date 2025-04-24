@@ -1,24 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cleanup_readline.c                                 :+:      :+:    :+:   */
+/*   builtin_unset.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/02 14:11:40 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/24 13:24:04 by rghisoiu         ###   ########.fr       */
+/*   Created: 2025/04/24 12:43:56 by rghisoiu          #+#    #+#             */
+/*   Updated: 2025/04/24 12:44:23 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 /**
- * @brief Cleans up readline memory/history.
+ * @brief Removes variables from the environment list.
+ * 
+ * @param sh The shell structure.
+ * @param args List of variable names to unset.
+ * @return int Always returns 0.
  */
-void	cleanup_readline(void)
+int	builtin_unset(t_shell *sh, char **args)
 {
-	clear_history();
-	rl_clear_history();
-	rl_free_line_state();
-	rl_deprep_terminal();
+	int	i;
+
+	i = 1;
+	while (args[i])
+	{
+		remove_env_var(&sh->env_list, args[i]);
+		i++;
+	}
+	return (0);
 }
