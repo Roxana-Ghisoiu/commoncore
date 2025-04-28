@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 13:06:01 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/23 20:26:08 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/28 13:41:40 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ int	execute_command(t_shell *sh, t_node *node)
 
 	if (!node || !node->args || !node->args[0])
 		return (0);
+	if (handle_builtin_if_needed(sh, node))
+		return (sh->exit_code);
 	path = find_command_path(sh, node->args[0]);
 	if (!path)
 	{

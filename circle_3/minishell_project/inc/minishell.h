@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 15:13:03 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/25 00:22:26 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/28 17:49:20 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@
 # include "../libft/libft.h"
 # include <stdbool.h>
 # include <stddef.h>
+# include <ctype.h>
 
 # define RED "\033[0;31m"
 # define GREEN "\033[1;32m"
@@ -140,6 +141,13 @@ void	create_and_add_token(t_token **tokens, char *content, bool quoted);
 void	process_and_execute_line(t_shell *sh, const char *input);
 void	run_shell_loop(t_shell *sh);
 
+/*Prototypes function for minishel/process_for_export.c */
+void	process_non_export(t_shell *sh, const char *input);
+
+/* Prototypes for minishell/handle_export.c */
+bool	is_export_command(const char *input);
+void	process_export_directly(t_shell *sh, const char *input);
+
 /*Prototypes function for minishel/cleanup_readline.c */
 void	cleanup_readline(void);
 
@@ -197,7 +205,7 @@ char	*select_expansion_chunk(t_shell *sh, const char *input, int *i);
 int		execute_word(t_shell *sh, t_node *node);
 
 /*Prototypes function for execute/execute_word_utils.c */
-int	fork_and_execute(t_shell *sh, char *path, char **args);
+int		fork_and_execute(t_shell *sh, char *path, char **args);
 char	**convert_env_to_array(t_env *env);
 int		execute_with_redir(t_shell *sh, char *path, char **args, t_node *node);
 
@@ -237,6 +245,9 @@ void	close_pipe(int pipe_fd[2]);
 int		is_builtin(char *cmd);
 int		execute_builtin(t_shell *sh, t_node *node, int fd_out);
 
+/* Prototypes for execute/execute_builtin_handler.c */
+int		handle_builtin_if_needed(t_shell *sh, t_node *node);
+
 /* Prototypes for utils/init_shell.c */
 void	init_shell(t_shell **sh, char **envp);
 void	free_shell(t_shell *sh);
@@ -259,6 +270,8 @@ void	free_tokens(t_token *head);
 
 /* Prototypes for utils /split_args_preserving_quotes.c */
 char	**split_args_preserving_quotes(const char *input);
+
+/* Prototypes for utils/utils_is_quoted.c */
 bool	is_quoted(const char *str);
 
 /* Prototypes for utils/debug_print_tokens.c */
@@ -276,6 +289,12 @@ void	remove_env_var(t_env **env_list, const char *key);
 /*Prototypes function for utils/token_utils.c */
 void	handle_special_token(t_token **tokens, const char *input, int *i);
 void	set_token_type(t_token *token);
+
+/*Prototypes function for utils/ utils_is_valid_varname*/
+int		is_valid_varname(const char *var);
+
+/*Prototypes for utils/utils_remove_quotes.c */
+char	*remove_surrounding_quotes(const char *str);
 
 /*Prototypes for treenodes/parse_command.c */
 t_node	*parse_command(t_token **tokens);
