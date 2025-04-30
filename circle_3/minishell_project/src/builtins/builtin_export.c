@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 12:45:14 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/28 17:06:45 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/29 11:27:12 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ int	builtin_export(t_shell *sh, char **args, int fd_out)
 	int	i;
 
 	if (!args[1])
-		return (builtin_env(sh, fd_out));
+	return (builtin_env(sh, NULL, fd_out));
 	i = 1;
 	while (args[i])
 	{

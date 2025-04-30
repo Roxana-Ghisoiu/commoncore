@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 14:37:06 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/24 15:13:37 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/04/29 11:21:19 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ int	execute_builtin(t_shell *sh, t_node *node, int fd_out)
 	if (ft_strncmp(node->args[0], "unset", 6) == 0)
 		return (builtin_unset(sh, node->args));
 	if (ft_strncmp(node->args[0], "env", 4) == 0)
-		return (builtin_env(sh, fd_out));
+		return (builtin_env(sh, node->args, fd_out));
 	if (ft_strncmp(node->args[0], "exit", 5) == 0)
 		return (builtin_exit(sh, node->args));
 	return (1);
