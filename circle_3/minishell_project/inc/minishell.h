@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 15:13:03 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/29 11:22:59 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/05/04 15:59:50 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -319,7 +319,7 @@ int		builtin_cd(t_shell *sh, char **args);
 int		builtin_pwd(char **args, int fd_out);
 
 /* Prototypes for builtins/builtin_env.c */
-int	builtin_env(t_shell *sh, char **args, int fd_out);
+int		builtin_env(t_shell *sh, char **args, int fd_out);
 
 /* Prototypes for builtins/builtin_exit.c */
 int		builtin_exit(t_shell *sh, char **args);

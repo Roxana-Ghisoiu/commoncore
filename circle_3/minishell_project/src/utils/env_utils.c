@@ -6,7 +6,7 @@
 /*   By: rghisoiu <rghisoiu@student.42luxembourg    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 13:50:00 by rghisoiu          #+#    #+#             */
-/*   Updated: 2025/04/28 18:07:57 by rghisoiu         ###   ########.fr       */
+/*   Updated: 2025/05/04 16:08:15 by rghisoiu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,29 +37,37 @@ char	*get_env_value(t_env *env, char *key)
  * @param key The name of the new variable.
  * @param value The value of the new variable.
  */
-static void	create_new_env_var(
-	t_env **env_list,
-	const char *key,
-	const char *value
-)
+static t_env	*allocate_new_env_var(const char *key, const char *value)
 {
 	t_env	*new_var;
-	t_env	*tail;
 
 	new_var = malloc(sizeof(t_env));
 	if (!new_var)
-		return ;
+		return (NULL);
 	new_var->key = ft_strdup(key);
 	if (!new_var->key)
 	{
 		free(new_var);
-		return ;
+		return (NULL);
 	}
 	if (value)
 		new_var->value = ft_strdup(value);
 	else
 		new_var->value = NULL;
 	new_var->next = NULL;
+	return (new_var);
+}
+
+static void	create_new_env_var(t_env **env_list,
+	const char *key,
+	const char *value)
+{
+	t_env	*new_var;
+	t_env	*tail;
+
+	new_var = allocate_new_env_var(key, value);
+	if (!new_var)
+		return ;
 	if (*env_list == NULL)
 	{
 		*env_list = new_var;

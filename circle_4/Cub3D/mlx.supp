@@ -1,0 +1,9 @@
+{
+   mlx_writev_noise
+   Memcheck:Param
+   writev(vector[0])
+   fun:writev
+   obj:/usr/lib/*/libxcb.so*
+   obj:/usr/lib/*/libX11.so*
+}
+

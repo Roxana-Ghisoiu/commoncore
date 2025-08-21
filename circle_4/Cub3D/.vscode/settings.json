@@ -1,0 +1,7 @@
+{
+	"files.associations": {
+		"cub3d.h": "c",
+		"render.h": "c",
+		"unistd.h": "c"
+	}
+}
