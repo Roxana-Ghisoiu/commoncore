@@ -1,0 +1,10 @@
+# common noise / secrets
+**/.env
+**/secrets
+.git
+*.log
+.DS_Store
+
+# if you ever use composer/npm locally (optional)
+node_modules
+vendor

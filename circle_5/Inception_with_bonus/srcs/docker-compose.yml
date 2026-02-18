@@ -1,0 +1,171 @@
+services:
+  nginx:
+    build: ./requirements/nginx
+    image: nginx
+    container_name: nginx
+    ports:
+      - "443:443"
+    volumes:
+      - wp-data:/var/www/html:ro
+    networks: [inception]
+    restart: always
+    depends_on:
+      wordpress:
+        condition: service_started
+      static_page:
+        condition: service_started
+      adminer:
+        condition: service_started
+
+  wordpress:
+    build: ./requirements/wordpress
+    image: wordpress
+    container_name: wordpress
+    env_file: .env
+    volumes:
+      - wp-data:/var/www/html
+    networks: [inception]
+    restart: always
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      - MYSQL_HOST=mariadb
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - WP_REDIS_HOST=redis
+      - WP_REDIS_PORT=6379
+      - WP_REDIS_PASSWORD=${REDIS_PASSWORD}
+
+  mariadb:
+    build: ./requirements/mariadb
+    image: mariadb
+    container_name: mariadb
+    env_file: .env
+    volumes:
+      - db-data:/var/lib/mysql
+    networks: [inception]
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # Bonus - Redis cache for WordPress
+  redis:
+    build:
+      context: ./requirements/bonus/redis
+      dockerfile: Dockerfile
+    image: redis
+    container_name: redis
+    restart: unless-stopped
+    networks: [inception]
+    volumes:
+      - redis-data:/data
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    command: ["--requirepass","${REDIS_PASSWORD}"]
+    healthcheck:
+      test: ["CMD-SHELL","REDISCLI_AUTH=\"$REDIS_PASSWORD\" redis-cli PING || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # Bonus - FTP server (vsftpd) pointing to the WordPress volume
+  ftp:
+    build:
+      context: ./requirements/bonus/ftp
+      dockerfile: Dockerfile
+    image: ftp
+    container_name: ftp
+    restart: unless-stopped
+    networks: [inception]
+    volumes:
+      - wp-data:/var/www/html
+    environment:
+      - FTP_USER=wpftp
+      - FTP_PASS=${FTP_PASS}
+      - FTP_HOME=/var/www/html
+      - PASV_ADDRESS=${PASV_ADDRESS}
+      - PASV_MIN_PORT=21000
+      - PASV_MAX_PORT=21010
+    ports:
+      - "21:21"
+      - "21000-21010:21000-21010"
+    depends_on:
+      wordpress:
+        condition: service_started
+
+  # Bonus - Static website (no PHP), served internally and proxied at /resume/
+  static_page:
+    build:
+      context: ./requirements/bonus/static_page
+      dockerfile: Dockerfile
+    image: static_page
+    container_name: static_page
+    restart: unless-stopped
+    networks: [inception]
+
+  # Bonus - Adminer (DB manager), proxied at /adminer/
+  adminer:
+    build:
+      context: ./requirements/bonus/adminer
+      dockerfile: Dockerfile
+    image: adminer
+    container_name: adminer
+    restart: unless-stopped
+    depends_on:
+      - mariadb
+    environment:
+      ADMINER_DEFAULT_SERVER: mariadb
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/ >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - inception
+
+  # Bonus - Portainer (managed via NGINX reverse proxy at /portainer/)
+  portainer:
+    build: ./requirements/bonus/portainer
+    image: portainer:42
+    container_name: portainer
+    restart: always
+    networks:
+      - inception
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer-data:/data
+    command: "/opt/portainer/portainer --data=/data --base-url=/portainer"
+
+
+volumes:
+  wp-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/${USER}/data/wp
+  db-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/${USER}/data/db
+  redis-data:
+    driver: local
+  portainer-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/${USER}/data/portainer
+
+networks:
+  inception:
+    driver: bridge

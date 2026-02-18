@@ -1,0 +1,5 @@
+.git
+**/.env
+**/secrets
+*.log
+.DS_Store

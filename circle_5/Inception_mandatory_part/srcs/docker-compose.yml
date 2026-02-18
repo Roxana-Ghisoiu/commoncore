@@ -1,0 +1,67 @@
+services:
+  nginx:
+    build: ./requirements/nginx
+    image: nginx
+    container_name: nginx
+    ports:
+      - "443:443"
+    volumes:
+      - wp-data:/var/www/html:ro
+    networks: [inception]
+    restart: always
+
+  wordpress:
+    build: ./requirements/wordpress
+    image: wordpress
+    container_name: wordpress
+    env_file: .env
+    volumes:
+      - wp-data:/var/www/html
+    networks: [inception]
+    restart: always
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    environment:
+      - MYSQL_HOST=mariadb
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      # map to what setup.sh expects (keeps backwards compat)
+      - WP_DB_HOST=mariadb:3306
+      - WP_DB_NAME=${MYSQL_DATABASE}
+      - WP_DB_USER=${MYSQL_USER}
+      - WP_DB_PASSWORD=${MYSQL_PASSWORD}
+
+  mariadb:
+    build: ./requirements/mariadb
+    image: mariadb
+    container_name: mariadb
+    env_file: .env
+    volumes:
+      - db-data:/var/lib/mysql
+    networks: [inception]
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  wp-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/${USER}/data/wp
+  db-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/${USER}/data/db
+
+networks:
+  inception:
+    driver: bridge

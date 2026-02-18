@@ -1,0 +1,17 @@
+# --- Secrets & local data (MANDATORY for subject) ---
+/srcs/.env
+/secrets/
+
+
+# --- Build & OS noise ---
+*.log
+.DS_Store
+Thumbs.db
+
+# --- IDE/editor configs (optional, nice-to-have) ---
+.vscode/
+.idea/
+
+# --- Dependencies (only if you ever add them locally) ---
+node_modules/
+vendor/
